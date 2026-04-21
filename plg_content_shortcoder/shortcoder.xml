@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+    <name>plg_content_shortcoder</name>
+    <author>Oleg Voronkovich</author>
+    <creationDate>2026-04-21</creationDate>
+    <version>1.0.0</version>
+    <creationDate>Today</creationDate>
+    <copyright>(C) 2026 PopArtDesign</copyright>
+    <license>MIT</license>
+    <namespace path="src">Joomla\Plugin\Content\Shortcoder</namespace>
+    <description>Lightweight shortcode engine using PHP templates in /shortcodes</description>
+    <files>
+        <folder plugin="shortcoder">services</folder>
+        <folder>src</folder>
+    </files>
+</extension>

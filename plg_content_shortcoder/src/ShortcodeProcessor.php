@@ -1,0 +1,88 @@
+<?php
+
+namespace Joomla\Plugin\Content\Shortcoder;
+
+\defined('_JEXEC') or die;
+
+class ShortcodeProcessor
+{
+    private array $shortcodeFiles = [];
+    private string $regexPattern = '';
+
+    public function __construct(array $shortcodes)
+    {
+        $this->shortcodeFiles = $shortcodes;
+    }
+
+    public function processShortcodes(string $text, object $item): string
+    {
+        $this->buildRegexPattern();
+
+        if ($this->regexPattern === '') {
+            return $text;
+        }
+
+        $count = 0;
+        $maxIterations = 10;
+
+        do {
+            $text = \preg_replace_callback($this->regexPattern, function (array $matches) use ($item): string {
+                $tag        = $matches[1];
+                $attrString = $matches[2];
+                $content    = $matches[3] ?? '';
+
+                $content = $this->processShortcodes($content, $item);
+                $params  = $this->parseAttributes(trim($attrString));
+
+                return $this->executeShortcode($tag, $params, $content, $item);
+            }, $text, -1, $count);
+
+            $maxIterations--;
+        } while ($count > 0 && $maxIterations > 0);
+
+        return $text;
+    }
+
+    private function buildRegexPattern(): void
+    {
+        if ($this->regexPattern !== '') {
+            return;
+        }
+
+        if (empty($this->shortcodeFiles)) {
+            $this->regexPattern = '';
+            return;
+        }
+
+        $tags = \implode('|', \array_map(fn ($t) => \preg_quote($t, '~'), \array_keys($this->shortcodeFiles)));
+
+        $this->regexPattern = '~\{(' . $tags . ')' .
+                              '((?:\s+[a-zA-Z0-9_\-]+=(?:"[^"]*"|\'[^\']*\'|[^"\'\s]+))*)\}' .
+                              '(?:(.*?)\{/\1\})?~s';
+    }
+
+    private function parseAttributes(string $attrString): array
+    {
+        $params = [];
+        if ($attrString === '') {
+            return $params;
+        }
+
+        \preg_match_all('/([a-zA-Z0-9_\-]+)\s*=\s*(?:(["\'])(.*?)\2|([^\s"\'<>]+))/', $attrString, $matches, \PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            $params[$match[1]] = $match[3] ?? $match[4];
+        }
+
+        return $params;
+    }
+
+    private function executeShortcode(string $tag, array $params, string $content, object $item): string
+    {
+        \ob_start();
+
+        \extract(['params' => $params, 'item' => $item, 'content' => $content], EXTR_SKIP);
+        require $this->shortcodeFiles[$tag];
+
+        return \ob_get_clean();
+    }
+}

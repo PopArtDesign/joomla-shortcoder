@@ -1,5 +1,7 @@
 # Joomla Shortcoder
 
+[![CI](https://github.com/PopArtDesign/joomla-shortcoder/actions/workflows/ci.yml/badge.svg)](https://github.com/PopArtDesign/joomla-shortcoder/actions/workflows/ci.yml)
+
 A lightweight, template-based shortcode engine for [Joomla](https://www.joomla.org/) 4 and later.
 
 This plugin scans Joomla content (articles, categories, etc.) for shortcodes and replaces them with the output of corresponding PHP template files or callables. It's designed to be simple, fast, and easy for developers to extend.

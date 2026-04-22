@@ -12,7 +12,8 @@ class ShortcodeProcessorTest extends TestCase
     protected function setUp(): void
     {
         $basePath = __DIR__ . '/../fixtures/shortcodes/';
-        $fileShortcodes = [
+
+        $this->shortcodes = [
             'simple'              => $basePath . 'simple.php',
             'attributes'          => $basePath . 'attributes.php',
             'content'             => $basePath . 'content.php',
@@ -20,9 +21,7 @@ class ShortcodeProcessorTest extends TestCase
             'complex'             => $basePath . 'complex.php',
             'multiple_attributes' => $basePath . 'multiple_attributes.php',
             'item_aware'          => $basePath . 'item_aware.php',
-        ];
 
-        $callableShortcodes = [
             'callable_simple' => function (): string {
                 return 'Callable Simple Output';
             },
@@ -36,8 +35,6 @@ class ShortcodeProcessorTest extends TestCase
                 return 123;
             }
         ];
-
-        $this->shortcodes = \array_merge($fileShortcodes, $callableShortcodes);
     }
 
     public function testUnknownShortcode(): void

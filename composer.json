@@ -1,19 +1,27 @@
 {
-  "name": "joomla/plg_content_shortcoder",
-  "description": "Shortcoder plugin for Joomla",
-  "type": "joomla-plugin",
-  "license": "GPL-2.0-or-later",
-  "autoload": {
-    "psr-4": {
-      "Joomla\\Plugin\\Content\\Shortcoder\\": "plg_content_shortcoder/src/"
+    "name": "popartdesign/joomla-shortcoder",
+    "description": "A lightweight, template-based shortcode engine for Joomla.",
+    "homepage": "https://github.com/PopArtDesign/joomla-shortcoder",
+    "type": "joomla-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oleg Voronkovich",
+            "email": "oleg-voronkovich@yandex.ru",
+            "homepage": "https://github.com/voronkovich"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Joomla\\Plugin\\Content\\Shortcoder\\": "plg_content_shortcoder/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Joomla\\Plugin\\Content\\Shortcoder\\Test\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
     }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Joomla\\Plugin\\Content\\Shortcoder\\Test\\": "tests/"
-    }
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^10.0"
-  }
 }

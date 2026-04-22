@@ -8,7 +8,7 @@ This plugin scans Joomla content (articles, categories, etc.) for shortcodes and
 
 ## Features
 
-*   **Simple Syntax**: Use curly braces for shortcodes: `{tag}` or `{tag attr="value"}content{/tag}`.
+*   **Simple Syntax**: Use curly braces for shortcodes. They can be self-closing (`{tag}` or `{tag attr="value"}`) or contain content between opening and closing tags (`{tag attr="value"}content{/tag}`).
 *   **Template-Based**: Each file-based shortcode corresponds to a simple PHP file. No database, no complex UI.
 *   **Callable-Based**: Define shortcodes directly using PHP functions for more complex logic.
 *   **Developer-Friendly**: Easily create new shortcodes by adding a PHP file or defining a callable.
@@ -93,6 +93,20 @@ Within your shortcode template files **or** callable shortcodes, you have access
 *   `$params`: An associative array of the attributes passed to the shortcode.
 *   `$content`: The string of content nested between the opening and closing shortcode tags.
 *   `$item`: The Joomla content item object (e.g., article, category) being processed.
+
+### Shortcode Attributes
+
+Shortcode attributes can be defined in several ways:
+
+*  **Double Quotes**: Attributes enclosed in double quotes `{tag attr="value"}` allow for values containing spaces and special characters. This is generally the recommended approach.
+*   **Single Quotes**: Attributes enclosed in single quotes `{tag attr='value'}` also allow for values containing spaces and special characters.
+*   **Unquoted**: Attributes without quotes `{tag attr=value}` are allowed, but the value must not contain spaces or special characters. It will be parsed until the next space or the closing bracket.
+
+**Examples**:
+
+```
+{example unquoted=value single='single quoted' double="double quoted value with spaces"}
+```
 
 ## License
 

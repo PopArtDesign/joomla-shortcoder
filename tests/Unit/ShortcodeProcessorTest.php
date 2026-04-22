@@ -7,36 +7,6 @@ use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 class ShortcodeProcessorTest extends TestCase
 {
-    private array $shortcodes = [];
-
-    protected function setUp(): void
-    {
-        $basePath = __DIR__ . '/../fixtures/shortcodes/';
-
-        $this->shortcodes = [
-            'simple'              => $basePath . 'simple.php',
-            'attributes'          => $basePath . 'attributes.php',
-            'content'             => $basePath . 'content.php',
-            'nested'              => $basePath . 'nested.php',
-            'complex'             => $basePath . 'complex.php',
-            'multiple_attributes' => $basePath . 'multiple_attributes.php',
-            'item_aware'          => $basePath . 'item_aware.php',
-
-            'callable_simple' => function (): string {
-                return 'Callable Simple Output';
-            },
-            'callable_params' => function (array $params, string $content, object $item): string {
-                $name = $params['name'] ?? 'Guest';
-                $age = $params['age'] ?? 'unknown';
-                $itemTitle = $item->title ?? 'No Item';
-                return "Hello {$name}, you are {$age}. Item title: {$itemTitle}. Content: {$content}";
-            },
-            'callable_non_string' => function (): int {
-                return 123;
-            }
-        ];
-    }
-
     public function testUnknownShortcode(): void
     {
         $processor = new ShortcodeProcessor([]);
@@ -51,7 +21,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testSimpleShortcode(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'simple' => function (): string {
+                return 'Simple Shortcode';
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'This is a {simple} test.';
 
@@ -63,7 +38,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testCallableShortcodeSimple(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'callable_simple' => function (): string {
+                return 'Callable Simple Output';
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'This is a {callable_simple} test.';
 
@@ -75,7 +55,15 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testCallableShortcodeWithAttributesAndContent(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'callable_params' => function (array $params, string $content, object $item): string {
+                $name = $params['name'] ?? 'Guest';
+                $age = $params['age'] ?? 'unknown';
+                $itemTitle = $item->title ?? 'No Item';
+                return "Hello {$name}, you are {$age}. Item title: {$itemTitle}. Content: {$content}";
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $mockItem = new \stdClass();
         $mockItem->title = 'My Callable Article';
@@ -90,7 +78,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testCallableShortcodeReturningNonString(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'callable_non_string' => function (): int {
+                return 123;
+            }
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'The number is {callable_non_string}.';
 
@@ -102,7 +95,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithAttributesDoubleQuotes(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'attributes' => function (array $params): string {
+                return 'Hello, ' . ($params['name'] ?? '');
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'Test {attributes name="Double Quoted"}!';
 
@@ -115,7 +113,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithAttributesSingleQuotes(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'attributes' => function (array $params): string {
+                return 'Hello, ' . ($params['name'] ?? '');
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = "Test {attributes name='Single Quoted'}!";
 
@@ -128,7 +131,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithAttributesWithoutQuotes(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'attributes' => function (array $params): string {
+                return 'Hello, ' . ($params['name'] ?? '');
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'Test {attributes name=Unquoted}!';
 
@@ -141,7 +149,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithEmptyAttributeValue(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'attributes' => function (array $params): string {
+                return 'Hello, ' . ($params['name'] ?? '');
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $textDouble = 'Test {attributes name=""}!';
         $textSingle = 'Test {attributes name=\'\'}!';
@@ -161,7 +174,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithMultipleAttributes(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'multiple_attributes' => function (array $params): string {
+                return "FirstName: {$params['firstname']}, LastName: {$params['lastname']}, Age: {$params['age']}";
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'Test {multiple_attributes firstname="John" lastname=\'Doe\' age=30}';
 
@@ -173,7 +191,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeUsesItemObject(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'item_aware' => function (array $params, string $content, object $item): string {
+                return 'Article Title: ' . $item->title;
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $mockItem = new \stdClass();
         $mockItem->title = 'My Test Article';
@@ -188,7 +211,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithContent(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'content' => function (array $params, string $content): string {
+                return 'The content is: ' . $content;
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'This is a {content}wrapped content{/content} test.';
 
@@ -200,7 +228,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithMultilineContent(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'content' => function (array $params, string $content): string {
+                return 'The content is: ' . $content;
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $multilineContent = "This is line 1.\nThis is line 2.\nThis is line 3.";
         $text = 'A shortcode with multiline content: {content}' . $multilineContent . '{/content}';
@@ -213,7 +246,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithEmptyContent(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'content' => function (array $params, string $content): string {
+                return 'The content is: ' . $content;
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'This is a {content}{/content} test.';
 
@@ -225,7 +263,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeTagsAreCaseSensitive(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'simple' => function (): string {
+                return 'This should not be rendered.';
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'This is a {SIMPLE} test.';
 
@@ -238,7 +281,15 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testNestedShortcodes(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'nested' => function (array $params, string $content): string {
+                return 'Nested start:(' . $content . ')Nested end';
+            },
+            'simple' => function (): string {
+                return 'Simple Shortcode';
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'Level1 {nested}Level2 {simple} here{/nested}';
 
@@ -250,7 +301,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testDeeplyNestedShortcodes(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'nested' => function (array $params, string $content): string {
+                return 'Nested start:(' . $content . ')Nested end';
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = '{nested}1{nested}2{nested}3{nested}4{nested}5{/nested}4{/nested}3{/nested}2{/nested}1{/nested}';
 
@@ -262,7 +318,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithAttributesAndContent(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'complex' => function (array $params, string $content): string {
+                return "Complex shortcode with attr '{$params['attr']}' and content '{$content}'";
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = 'Start {complex attr="Value A"}Inner Content{/complex} End';
 
@@ -274,7 +335,12 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeMaxDepthIsRespected(): void
     {
-        $processor = new ShortcodeProcessor($this->shortcodes);
+        $shortcodes = [
+            'nested' => function (array $params, string $content): string {
+                return 'Nested start:(' . $content . ')Nested end';
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
 
         $text = '{nested}1{nested}2{nested}3{/nested}2{/nested}1{/nested}';
 

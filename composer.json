@@ -21,7 +21,15 @@
             "PopArtDesign\\JoomlaShortcoder\\Plugin\\Content\\Shortcoder\\Test\\": "tests/"
         }
     },
+    "require": {
+        "php": ">=7.4"
+    },
     "require-dev": {
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "friendsofphp/php-cs-fixer": "^3.95"
+    },
+    "scripts": {
+        "cs": "php-cs-fixer fix -v --dry-run --allow-risky=yes",
+        "cs-fix": "php-cs-fixer fix -v --allow-risky=yes"
     }
 }

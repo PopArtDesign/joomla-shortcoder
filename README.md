@@ -82,6 +82,7 @@ You can then use it in your Joomla articles like this:
 
 ```
 {hello name="Alice"}
+
 {current_year}
 ```
 

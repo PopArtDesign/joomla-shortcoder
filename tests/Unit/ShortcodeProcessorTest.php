@@ -36,16 +36,16 @@ class ShortcodeProcessorTest extends TestCase
         );
     }
 
-    public function testCallableShortcodeReturningNonString(): void
+    public function testShortcodeReturningNonString(): void
     {
         $shortcodes = [
-            'callable_non_string' => function (): int {
+            'non_string' => function (): int {
                 return 123;
             }
         ];
         $processor = new ShortcodeProcessor($shortcodes);
 
-        $text = 'The number is {callable_non_string}.';
+        $text = 'The number is {non_string}.';
 
         $this->assertSame(
             'The number is 123.',

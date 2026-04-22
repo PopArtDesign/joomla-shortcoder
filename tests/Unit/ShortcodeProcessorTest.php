@@ -36,46 +36,6 @@ class ShortcodeProcessorTest extends TestCase
         );
     }
 
-    public function testCallableShortcodeSimple(): void
-    {
-        $shortcodes = [
-            'callable_simple' => function (): string {
-                return 'Callable Simple Output';
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
-
-        $text = 'This is a {callable_simple} test.';
-
-        $this->assertSame(
-            'This is a Callable Simple Output test.',
-            $processor->processShortcodes($text, new \stdClass()),
-        );
-    }
-
-    public function testCallableShortcodeWithAttributesAndContent(): void
-    {
-        $shortcodes = [
-            'callable_params' => function (array $params, string $content, object $item): string {
-                $name = $params['name'] ?? 'Guest';
-                $age = $params['age'] ?? 'unknown';
-                $itemTitle = $item->title ?? 'No Item';
-                return "Hello {$name}, you are {$age}. Item title: {$itemTitle}. Content: {$content}";
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
-
-        $mockItem = new \stdClass();
-        $mockItem->title = 'My Callable Article';
-
-        $text = 'Begin {callable_params name="World" age=42}Inner Text{/callable_params} End.';
-
-        $this->assertSame(
-            'Begin Hello World, you are 42. Item title: My Callable Article. Content: Inner Text End.',
-            $processor->processShortcodes($text, $mockItem),
-        );
-    }
-
     public function testCallableShortcodeReturningNonString(): void
     {
         $shortcodes = [

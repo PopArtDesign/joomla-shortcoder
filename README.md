@@ -1,15 +1,10 @@
-# Joomla Shortcoder Plugin
-
-A lightweight, template-based shortcode engine for Joomla 4 and later.
-
-This plugin scans Joomla content (articles, categories, etc.) for shortcodes and replaces them with the output of corresponding PHP template files. It's designed to be simple, fast, and easy for developers to extend.
-
 ## Features
 
 *   **Simple Syntax**: Use curly braces for shortcodes: `{tag}` or `{tag attr="value"}content{/tag}`.
-*   **Template-Based**: Each shortcode corresponds to a simple PHP file. No database, no complex UI.
-*   **Developer-Friendly**: Easily create new shortcodes by adding a PHP file.
-*   **Content-Aware**: Shortcode templates have access to the current Joomla article (`$item`).
+*   **Template-Based**: Each file-based shortcode corresponds to a simple PHP file. No database, no complex UI.
+*   **Callable-Based**: Define shortcodes directly using PHP functions for more complex logic.
+*   **Developer-Friendly**: Easily create new shortcodes by adding a PHP file or defining a callable.
+*   **Content-Aware**: Shortcode templates and callables have access to the current Joomla article (`$item`).
 *   **Lightweight**: Minimal processing overhead.
 
 ## Installation
@@ -21,11 +16,44 @@ This plugin scans Joomla content (articles, categories, etc.) for shortcodes and
 
 ## Usage
 
+### File-based Shortcodes
+
 1.  Create a `shortcodes` directory in the root of your Joomla installation (if it doesn't already exist).
 2.  Inside the `shortcodes` directory, create a new PHP file for each shortcode you want to add. The filename (without `.php`) becomes the shortcode tag. For example, `my_shortcode.php` will be available as `{my_shortcode}`.
 3.  Write the PHP and HTML for your shortcode output in that file.
 
-### Example Shortcode
+### Callable Shortcodes
+
+For more advanced shortcodes or when you prefer to keep logic within PHP code rather than separate template files, you can define callable shortcodes.
+
+1.  Create a file named `shortcodes.php` directly inside your `shortcodes` directory (e.g., `JPATH_ROOT/shortcodes/shortcodes.php`).
+2.  This `shortcodes.php` file must return an associative array where keys are the shortcode tags and values are PHP callables (functions, closures, static methods, etc.).
+3.  Callable shortcodes defined in `shortcodes.php` will take precedence over file-based shortcodes with the same tag name.
+
+**Example `shortcodes.php` content:**
+
+```php
+<?php
+
+\defined('_JEXEC') or die;
+
+return [
+    'my_callable' => function (array $params, string $content, object $item): string {
+        $name = $params['name'] ?? 'Guest';
+        return 'Hello from callable, ' . $name . '! Content: ' . $content . '. Article ID: ' . ($item->id ?? 'N/A');
+    },
+    'current_year' => fn() => (string) date('Y'),
+];
+```
+
+You can then use it in your Joomla articles like this:
+
+```
+{my_callable name="Alice"}This is some inner text.{/my_callable}
+{current_year}
+```
+
+### Example File-based Shortcode
 
 If you create a file at `/shortcodes/hello.php` with the following content:
 
@@ -52,9 +80,9 @@ This will be rendered as:
 <p>This is the content inside the shortcode.</p>
 ```
 
-### Available Variables in Templates
+### Available Variables
 
-Within your shortcode template files, you have access to:
+Within your shortcode template files **or** callable shortcodes, you have access to:
 
 *   `$params`: An associative array of the attributes passed to the shortcode.
 *   `$content`: The string of content nested between the opening and closing shortcode tags.

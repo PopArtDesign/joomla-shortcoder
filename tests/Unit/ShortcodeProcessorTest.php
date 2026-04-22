@@ -322,4 +322,24 @@ class ShortcodeProcessorTest extends TestCase
             $processor->processShortcodes($text, new \stdClass(), 2)
         );
     }
+
+    public function testMultipleShortcodesInText(): void
+    {
+        $shortcodes = [
+            'foo' => function (): string {
+                return 'FOO';
+            },
+            'bar' => function (): string {
+                return 'BAR';
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = 'This is {foo}. This is {bar}. This is {foo} again.';
+
+        $this->assertSame(
+            'This is FOO. This is BAR. This is FOO again.',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
 }

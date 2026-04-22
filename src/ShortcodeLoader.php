@@ -2,8 +2,10 @@
 
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder;
 
+\defined('_JEXEC') or die;
+
 /**
- * Responsible for discovering and validating shortcode template files.
+ * Discovers and validates shortcode template files.
  */
 class ShortcodeLoader
 {

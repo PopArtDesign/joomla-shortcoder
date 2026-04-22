@@ -3,6 +3,7 @@
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 class ShortcodeProcessorTest extends TestCase
@@ -359,5 +360,41 @@ class ShortcodeProcessorTest extends TestCase
             'Start Attr: Value, Content: Inner, Item: My Item End',
             $processor->processShortcodes($text, $mockItem)
         );
+    }
+
+    /**
+     * @test
+     * @covers \PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor::executeShortcode
+     */
+    public function testShortcodeExecutionThrowsExceptionAndIsHandledGracefully(): void
+    {
+        $faultyShortcodeTag = 'faulty_shortcode';
+        $errorMessage       = 'Something went wrong inside the shortcode!';
+
+        // Define a callable that deliberately throws an exception
+        $faultyHandler = function () use ($errorMessage) {
+            throw new \RuntimeException($errorMessage);
+        };
+
+        $shortcodes = [
+            $faultyShortcodeTag => $faultyHandler,
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = 'Content with a {faulty_shortcode} that will fail.';
+        $item = new \stdClass(); // Mock item
+
+        $this->expectException(ShortcodeProcessingException::class);
+        $this->expectExceptionMessageMatches(
+            sprintf('/Shortcode "%s" failed to execute\./', $faultyShortcodeTag)
+        );
+
+        try {
+            $processor->processShortcodes($text, $item);
+        } catch (ShortcodeProcessingException $e) {
+            $this->assertInstanceOf(\RuntimeException::class, $e->getPrevious());
+            $this->assertSame($errorMessage, $e->getPrevious()->getMessage());
+            throw $e; // Re-throw to satisfy expectException
+        }
     }
 }

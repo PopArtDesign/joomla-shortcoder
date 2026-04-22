@@ -2,6 +2,9 @@
 
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder;
 
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
+use Throwable;
+
 \defined('_JEXEC') or die;
 
 /**
@@ -125,14 +128,22 @@ class ShortcodeProcessor
      */
     private function executeShortcode(string $tag, array $params, string $content, object $item): string
     {
-        $handler = $this->shortcodes[$tag];
+        try {
+            $handler = $this->shortcodes[$tag];
 
-        if (\is_callable($handler)) {
-            return (string) $handler($params, $content, $item);
+            if (\is_callable($handler)) {
+                return (string) $handler($params, $content, $item);
+            }
+
+            \ob_start();
+            require $handler;
+            return \ob_get_clean();
+        } catch (Throwable $e) {
+            throw new ShortcodeProcessingException(
+                sprintf('Shortcode "%s" failed to execute.', $tag),
+                $e->getCode(),
+                $e
+            );
         }
-
-        \ob_start();
-        require $handler;
-        return \ob_get_clean();
     }
 }

@@ -2,7 +2,9 @@
 
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension;
 
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 \defined('_JEXEC') or die;
@@ -49,7 +51,18 @@ class Shortcoder extends CMSPlugin
         $textProperties = ['text', 'introtext', 'fulltext', 'description'];
         foreach ($textProperties as $prop) {
             if (isset($item->$prop) && is_string($item->$prop) && $item->$prop !== '') {
-                $item->$prop = $this->processor->processShortcodes($item->$prop, $item);
+                try {
+                    $item->$prop = $this->processor->processShortcodes($item->$prop, $item);
+                } catch (ShortcodeProcessingException $e) {
+                    if (\defined('JDEBUG') && JDEBUG) {
+                        throw $e;
+                    }
+
+                    Log::error(
+                        'Shortcoder failed to process content for property "' . $prop . '": ' . $e->getMessage() . "\n" . $e->getPrevious(),
+                        ['extension' => 'joomla-shortcoder']
+                    );
+                }
             }
         }
     }

@@ -24,7 +24,10 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             ShortcodeLoader::class,
             function (Container $container) {
-                return new ShortcodeLoader();
+                return new ShortcodeLoader(\array_filter([
+                    \dirname(__DIR__) . '/shortcodes',
+                    \JPATH_ROOT . '/shortcodes',
+                ], 'is_dir'));
             }
         );
 
@@ -32,9 +35,8 @@ return new class () implements ServiceProviderInterface {
             ShortcodeProcessor::class,
             function (Container $container) {
                 $loader = $container->get(ShortcodeLoader::class);
-                $shortcodeFiles = $loader->loadShortcodes(\JPATH_ROOT . '/shortcodes');
 
-                return new ShortcodeProcessor($shortcodeFiles);
+                return new ShortcodeProcessor($loader->loadShortcodes());
             }
         );
     }

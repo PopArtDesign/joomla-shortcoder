@@ -16,8 +16,8 @@ class ShortcodeLoaderTest extends TestCase
 
     public function testLoadShortcodesReturnsFiles(): void
     {
-        $loader = new ShortcodeLoader();
-        $result = $loader->loadShortcodes($this->fixturesDir);
+        $loader = new ShortcodeLoader([$this->fixturesDir]);
+        $result = $loader->loadShortcodes();
 
         $this->assertArrayHasKey('simple', $result);
         $this->assertArrayHasKey('nested', $result);
@@ -29,7 +29,7 @@ class ShortcodeLoaderTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $loader = new ShortcodeLoader();
-        $loader->loadShortcodes($this->fixturesDir . '/non_existent');
+        $loader = new ShortcodeLoader([$this->fixturesDir . '/non_existent']);
+        $loader->loadShortcodes();
     }
 }

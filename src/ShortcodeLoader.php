@@ -8,39 +8,54 @@ namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder;
 class ShortcodeLoader
 {
     /**
-     * Loads shortcode files from the given directory.
-     *
-     * @param string $dir The directory to scan for shortcode files.
+     * @var array
+     */
+    private array $paths;
+
+    /**
+     * @param array $paths The directories to scan for shortcode files.
+     */
+    public function __construct(array $paths)
+    {
+        $this->paths = $paths;
+    }
+
+    /**
+     * Loads shortcode files from the configured directories.
      *
      * @return array An associative array of shortcode tags and their file paths.
      *
-     * @throws \RuntimeException If the directory is not readable.
+     * @throws \RuntimeException If a directory is not readable.
      */
-    public function loadShortcodes(string $dir): array
+    public function loadShortcodes(): array
     {
-        if (!is_dir($dir) || !is_readable($dir)) {
-            throw new \RuntimeException(
-                \sprintf('Shortcodes directory "%s" not exists or is not readable.', $dir)
-            );
-        }
-
         $shortcodeFiles = [];
 
-        foreach (\glob($dir . '/*.php', \GLOB_NOSORT | \GLOB_ERR) as $filePath) {
-            $realPath = \realpath($filePath);
-            if ($realPath === false) {
-                continue;
+        foreach ($this->paths as $dir) {
+            if (!\is_dir($dir) || !\is_readable($dir)) {
+                throw new \RuntimeException(
+                    \sprintf('Shortcodes directory "%s" not exists or is not readable.', $dir)
+                );
             }
 
-            $basename = \basename($filePath, '.php');
-            if (!\preg_match('/^[a-zA-Z0-9_\-]+$/', $basename)) {
-                continue;
-            }
-            if (\strpos($realPath, \realpath($dir) . \DIRECTORY_SEPARATOR) !== 0) {
-                continue;
-            }
+            foreach (\glob($dir . '/*.php', \GLOB_NOSORT | \GLOB_ERR) as $filePath) {
+                $realPath = \realpath($filePath);
+                if ($realPath === false) {
+                    continue;
+                }
 
-            $shortcodeFiles[$basename] = $realPath;
+                $basename = \basename($filePath, '.php');
+                if (!\preg_match('/^[a-zA-Z0-9_\-]+$/', $basename)) {
+                    continue;
+                }
+                if (\strpos($realPath, \realpath($dir) . \DIRECTORY_SEPARATOR) !== 0) {
+                    continue;
+                }
+
+                // If a shortcode with the same name exists in multiple paths,
+                // the last one found will overwrite the previous one.
+                $shortcodeFiles[$basename] = $realPath;
+            }
         }
 
         return $shortcodeFiles;

@@ -9,7 +9,7 @@
     <copyright>(C) 2026 Oleg Voronkovich</copyright>
     <license>MIT</license>
     <namespace path="src">PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder</namespace>
-    <description>Lightweight shortcode engine using PHP templates in /shortcodes</description>
+    <description>A lightweight, template-based shortcode engine</description>
     <files>
         <folder plugin="shortcoder">services</folder>
         <folder>src</folder>

@@ -31,25 +31,24 @@ If you create a file at `/shortcodes/hello.php` with the following content:
 
 ```php
 <?php
-// /shortcodes/hello.php
 
-$name = $params['name'] ?? 'World';
+\defined('_JEXEC') or die;
 ?>
 
-<strong>Hello, <?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>!</strong>
+<strong>Hello, <?php echo $params['name'] ?? 'World'; ?>!</strong>
 <p><?php echo $content; ?></p>
 ```
 
 You can then use it in your Joomla articles like this:
 
 ```
-{hello name="Oleg"}This is the content inside the shortcode.{/hello}
+{hello name="John Doe"}This is the content inside the shortcode.{/hello}
 ```
 
 This will be rendered as:
 
 ```html
-<strong>Hello, Oleg!</strong>
+<strong>Hello, John Doe!</strong>
 <p>This is the content inside the shortcode.</p>
 ```
 

@@ -16,8 +16,10 @@ in hendrerit in vulputate velit esse molestie consequat, vel illum dolore
 eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim
 qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
 LOREMIPSUM);
+?>
 
-for ($i = 0; $i < $paragraphs; $i++):
+<?php if ($paragraphs && $paragraphs > 0): ?>
+<?php for ($i = 0; $i < $paragraphs; $i++):
     if ($minWords !== null || $maxWords !== null) {
         $effectiveMin = max(1, $minWords ?? 1);
         $effectiveMax = $maxWords ?? $exactWords;
@@ -51,3 +53,36 @@ for ($i = 0; $i < $paragraphs; $i++):
     ?>
 </p>
 <?php endfor; ?>
+<?php else: ?>
+<?php
+// Single paragraph mode
+if ($minWords !== null || $maxWords !== null) {
+    $effectiveMin = max(1, $minWords ?? 1);
+    $effectiveMax = $maxWords ?? $exactWords;
+
+    // Ensure min <= max
+    if ($effectiveMin > $effectiveMax) {
+        $effectiveMax = $effectiveMin;
+    }
+
+    $currentWordCount = rand($effectiveMin, $effectiveMax);
+} else {
+    $currentWordCount = $exactWords;
+}
+
+// Slice the words array to the desired length
+$currentParagraphWords = array_slice($lorem, 0, $currentWordCount);
+$text = implode(' ', $currentParagraphWords);
+
+// Ensure it ends with a dot
+if (substr($text, -1) !== '.') {
+    // If it ends with a comma, remove it before adding the dot
+    if (substr($text, -1) === ',') {
+        $text = substr($text, 0, -1);
+    }
+    $text .= '.';
+}
+
+echo htmlspecialchars($text);
+?>
+<?php endif; ?>

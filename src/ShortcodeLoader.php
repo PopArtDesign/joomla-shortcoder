@@ -31,7 +31,7 @@ class ShortcodeLoader
      */
     public function loadShortcodes(): array
     {
-        $shortcodeFiles = [];
+        $shortcodes = [];
 
         foreach ($this->paths as $dir) {
             if (!\is_dir($dir) || !\is_readable($dir)) {
@@ -41,12 +41,16 @@ class ShortcodeLoader
             }
 
             foreach (\glob($dir . '/*.php', \GLOB_NOSORT | \GLOB_ERR) as $filePath) {
+                $basename = \basename($filePath, '.php');
+                if ($basename === 'shortcodes') {
+                    continue;
+                }
+
                 $realPath = \realpath($filePath);
                 if ($realPath === false) {
                     continue;
                 }
 
-                $basename = \basename($filePath, '.php');
                 if (!\preg_match('/^[a-zA-Z0-9_\-]+$/', $basename)) {
                     continue;
                 }
@@ -56,10 +60,25 @@ class ShortcodeLoader
 
                 // If a shortcode with the same name exists in multiple paths,
                 // the last one found will overwrite the previous one.
-                $shortcodeFiles[$basename] = $realPath;
+                $shortcodes[$basename] = $realPath;
+            }
+
+            // Load callable shortcodes from shortcodes.php
+            $callableShortcodesFile = $dir . '/shortcodes.php';
+            if (\is_file($callableShortcodesFile) && \is_readable($callableShortcodesFile)) {
+                $callableShortcodes = require $callableShortcodesFile;
+
+                if (\is_array($callableShortcodes)) {
+                    foreach ($callableShortcodes as $tag => $handler) {
+                        if (\is_string($tag) && \preg_match('/^[a-zA-Z0-9_\-]+$/', $tag) && \is_callable($handler)) {
+                            // Callable shortcodes from file will overwrite file-based shortcodes with same name
+                            $shortcodes[$tag] = $handler;
+                        }
+                    }
+                }
             }
         }
 
-        return $shortcodeFiles;
+        return $shortcodes;
     }
 }

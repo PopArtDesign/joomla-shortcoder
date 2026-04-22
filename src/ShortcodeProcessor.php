@@ -6,12 +6,12 @@ namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder;
 
 class ShortcodeProcessor
 {
-    private array $shortcodeFiles = [];
+    private array $shortcodes = [];
     private string $regexPattern = '';
 
     public function __construct(array $shortcodes)
     {
-        $this->shortcodeFiles = $shortcodes;
+        $this->shortcodes = $shortcodes;
     }
 
     public function processShortcodes(string $text, object $item, int $maxDepth = 10): string
@@ -40,12 +40,12 @@ class ShortcodeProcessor
             return;
         }
 
-        if (empty($this->shortcodeFiles)) {
+        if (empty($this->shortcodes)) {
             $this->regexPattern = '';
             return;
         }
 
-        $tags = \implode('|', \array_map(fn ($t) => \preg_quote($t, '~'), \array_keys($this->shortcodeFiles)));
+        $tags = \implode('|', \array_map(fn ($t) => \preg_quote($t, '~'), \array_keys($this->shortcodes)));
 
         $this->regexPattern = '~\{(' . $tags . ')' .
                               '((?:\s+[a-zA-Z0-9_\-]+=(?:"[^"]*"|\'[^\']*\'|[^"\'\s]+))*)\}' .
@@ -78,10 +78,14 @@ class ShortcodeProcessor
 
     private function executeShortcode(string $tag, array $params, string $content, object $item): string
     {
+        $handler = $this->shortcodes[$tag];
+
+        if (\is_callable($handler)) {
+            return (string) $handler($params, $content, $item);
+        }
+
         \ob_start();
-
-        require $this->shortcodeFiles[$tag];
-
+        require $handler;
         return \ob_get_clean();
     }
 }

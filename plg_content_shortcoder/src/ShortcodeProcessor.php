@@ -14,33 +14,24 @@ class ShortcodeProcessor
         $this->shortcodeFiles = $shortcodes;
     }
 
-    public function processShortcodes(string $text, object $item): string
+    public function processShortcodes(string $text, object $item, int $maxDepth = 10): string
     {
         $this->buildRegexPattern();
 
-        if ($this->regexPattern === '') {
+        if ($this->regexPattern === '' || $maxDepth <= 0) {
             return $text;
         }
 
-        $count = 0;
-        $maxIterations = 10;
+        return \preg_replace_callback($this->regexPattern, function (array $matches) use ($item, $maxDepth): string {
+            $tag        = $matches[1];
+            $attrString = $matches[2];
+            $content    = $matches[3] ?? '';
 
-        do {
-            $text = \preg_replace_callback($this->regexPattern, function (array $matches) use ($item): string {
-                $tag        = $matches[1];
-                $attrString = $matches[2];
-                $content    = $matches[3] ?? '';
+            $content = $this->processShortcodes($content, $item, $maxDepth - 1);
+            $params  = $this->parseAttributes(trim($attrString));
 
-                $content = $this->processShortcodes($content, $item);
-                $params  = $this->parseAttributes(trim($attrString));
-
-                return $this->executeShortcode($tag, $params, $content, $item);
-            }, $text, -1, $count);
-
-            $maxIterations--;
-        } while ($count > 0 && $maxIterations > 0);
-
-        return $text;
+            return $this->executeShortcode($tag, $params, $content, $item);
+        }, $text, -1);
     }
 
     private function buildRegexPattern(): void

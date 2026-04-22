@@ -206,4 +206,29 @@ class ShortcodeProcessorTest extends TestCase
             $processor->processShortcodes($text, new \stdClass())
         );
     }
+
+    public function testShortcodeMaxDepthIsRespected(): void
+    {
+        $processor = new ShortcodeProcessor($this->shortcodeFiles);
+
+        $text = '{nested}1{nested}2{nested}3{/nested}2{/nested}1{/nested}';
+
+        // With maxDepth=0, nothing is processed
+        $this->assertSame(
+            $text,
+            $processor->processShortcodes($text, new \stdClass(), 0)
+        );
+
+        // With maxDepth=1, only the first level is processed
+        $this->assertSame(
+            'Nested start:(1{nested}2{nested}3{/nested}2{/nested}1)Nested end',
+            $processor->processShortcodes($text, new \stdClass(), 1)
+        );
+
+        // With maxDepth=2, the third level should not be processed
+        $this->assertSame(
+            'Nested start:(1Nested start:(2{nested}3{/nested}2)Nested end1)Nested end',
+            $processor->processShortcodes($text, new \stdClass(), 2)
+        );
+    }
 }

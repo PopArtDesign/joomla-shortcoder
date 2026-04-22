@@ -1,4 +1,4 @@
-# Joomla Content Shortcoder Plugin
+# Joomla Shortcoder Plugin
 
 A lightweight, template-based shortcode engine for Joomla 4 and later.
 

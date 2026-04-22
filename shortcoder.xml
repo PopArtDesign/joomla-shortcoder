@@ -14,4 +14,9 @@
         <folder plugin="shortcoder">services</folder>
         <folder>src</folder>
     </files>
+    <updateservers>
+        <server type="extension" priority="1" name="Joomla Shortcoder plugin updates">
+             https://raw.githubusercontent.com/PopArtDesign/joomla-shortcoder/main/update.xml
+        </server>
+	</updateservers>
 </extension>

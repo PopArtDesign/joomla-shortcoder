@@ -80,7 +80,6 @@ class ShortcodeProcessor
     {
         \ob_start();
 
-        \extract(['params' => $params, 'item' => $item, 'content' => $content], EXTR_SKIP);
         require $this->shortcodeFiles[$tag];
 
         return \ob_get_clean();

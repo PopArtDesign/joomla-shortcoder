@@ -5,9 +5,9 @@
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\Plugin\Content\Shortcoder\Extension\Shortcoder;
-use Joomla\Plugin\Content\Shortcoder\ShortcodeLoader;
-use Joomla\Plugin\Content\Shortcoder\ShortcodeProcessor;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeLoader;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void

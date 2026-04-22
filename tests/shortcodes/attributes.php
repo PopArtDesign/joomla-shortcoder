@@ -1,0 +1,2 @@
+<?php
+echo "Hello, " . ($params['name'] ?? 'World');

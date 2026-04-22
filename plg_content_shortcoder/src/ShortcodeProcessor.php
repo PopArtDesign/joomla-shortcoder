@@ -58,7 +58,7 @@ class ShortcodeProcessor
 
         $this->regexPattern = '~\{(' . $tags . ')' .
                               '((?:\s+[a-zA-Z0-9_\-]+=(?:"[^"]*"|\'[^\']*\'|[^"\'\s]+))*)\}' .
-                              '(?:(.*?)\{/\1\})?~s';
+                              '(?:(.*)\{/\1\})?~s';
     }
 
     private function parseAttributes(string $attrString): array
@@ -68,9 +68,18 @@ class ShortcodeProcessor
             return $params;
         }
 
-        \preg_match_all('/([a-zA-Z0-9_\-]+)\s*=\s*(?:(["\'])(.*?)\2|([^\s"\'<>]+))/', $attrString, $matches, \PREG_SET_ORDER);
+        \preg_match_all('/([a-zA-Z0-9_\-]+)\s*=\s*(?:(?:"([^"]*)")|(?:\'([^\']*)\')|([^\s"\'<>]+))/', $attrString, $matches, \PREG_SET_ORDER);
         foreach ($matches as $match) {
-            $params[$match[1]] = $match[3] ?? $match[4];
+            $value = '';
+            // Group 2 for double-quoted, Group 3 for single-quoted, Group 4 for unquoted
+            if (isset($match[2]) && $match[2] !== '') {
+                $value = $match[2];
+            } elseif (isset($match[3]) && $match[3] !== '') {
+                $value = $match[3];
+            } elseif (isset($match[4]) && $match[4] !== '') {
+                $value = $match[4];
+            }
+            $params[$match[1]] = $value;
         }
 
         return $params;

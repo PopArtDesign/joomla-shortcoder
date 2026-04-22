@@ -1,0 +1,19 @@
+{
+  "name": "joomla/plg_content_shortcoder",
+  "description": "Shortcoder plugin for Joomla",
+  "type": "joomla-plugin",
+  "license": "GPL-2.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "Joomla\\Plugin\\Content\\Shortcoder\\": "plg_content_shortcoder/src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Joomla\\Plugin\\Content\\Shortcoder\\Test\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0"
+  }
+}

@@ -49,9 +49,10 @@ LOREMIPSUM);
 
 return [
     'loremipsum' => function (array $params, string $content, object $item): string {
-        $paragraphs = (int) ($params['paragraphs'] ?? 0);
-        $wordsAttr  = $params['words'] ?? '100'; // Default to 100 words
+        $paragraphsAttr = $params['paragraphs'] ?? '1'; // Default to 1 paragraph
+        $wordsAttr      = $params['words'] ?? '100'; // Default to 100 words
 
+        // --- Parse words attribute ---
         $minWordCount = 1;
         $maxWordCount = null;
 
@@ -68,9 +69,34 @@ return [
             $maxWordCount = $minWordCount; // Exact count if only one number
         }
 
-        if ($paragraphs > 0) {
-            $output = [];
-            for ($i = 0; $i < $paragraphs; $i++) {
+        // --- Parse paragraphs attribute ---
+        $minParagraphs = 1;
+        $maxParagraphs = null;
+
+        if (\is_string($paragraphsAttr) && \strpos($paragraphsAttr, ',') !== false) {
+            list($min, $max) = explode(',', $paragraphsAttr);
+            $minParagraphs = max(1, (int) $min);
+            $maxParagraphs = (int) $max;
+
+            if ($maxParagraphs < $minParagraphs) {
+                $maxParagraphs = $minParagraphs; // Ensure valid range
+            }
+        } else {
+            $minParagraphs = max(1, (int) $paragraphsAttr);
+            $maxParagraphs = $minParagraphs; // Exact count if only one number
+        }
+
+        // Determine the actual number of paragraphs to generate
+        $numberOfParagraphs = $minParagraphs;
+        if ($maxParagraphs !== null && $maxParagraphs > $minParagraphs) {
+            $numberOfParagraphs = rand($minParagraphs, $maxParagraphs);
+        }
+        
+        // --- Generate output ---
+        $output = [];
+
+        if ($numberOfParagraphs > 0) {
+            for ($i = 0; $i < $numberOfParagraphs; $i++) {
                 $output[] = sprintf(
                     '<p>%s</p>',
                     loremIpsum($minWordCount, $maxWordCount)
@@ -79,6 +105,7 @@ return [
             return implode("\n", $output);
         }
 
-        return loremIpsum($minWordCount, $maxWordCount);
+        // If numberOfParagraphs is 0 or less, return empty string.
+        return '';
     },
 ];

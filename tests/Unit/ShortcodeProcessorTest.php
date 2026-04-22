@@ -342,4 +342,22 @@ class ShortcodeProcessorTest extends TestCase
             $processor->processShortcodes($text, new \stdClass())
         );
     }
+
+    public function testFileBasedShortcode(): void
+    {
+        $shortcodes = [
+            'file_complex' => dirname(__DIR__) . '/fixtures/shortcodes/complex.php',
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $mockItem = new \stdClass();
+        $mockItem->title = 'My Item';
+
+        $text = 'Start {file_complex attr="Value"}Inner{/file_complex} End';
+
+        $this->assertSame(
+            'Start Attr: Value, Content: Inner, Item: My Item End',
+            $processor->processShortcodes($text, $mockItem)
+        );
+    }
 }

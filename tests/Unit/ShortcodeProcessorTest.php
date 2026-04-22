@@ -158,6 +158,18 @@ class ShortcodeProcessorTest extends TestCase
         );
     }
 
+    public function testShortcodeWithEmptyContent(): void
+    {
+        $processor = new ShortcodeProcessor($this->shortcodeFiles);
+
+        $text = 'This is a {content}{/content} test.';
+
+        $this->assertSame(
+            'This is a The content is:  test.',
+            $processor->processShortcodes($text, new \stdClass()),
+        );
+    }
+
     public function testShortcodeTagsAreCaseSensitive(): void
     {
         $processor = new ShortcodeProcessor($this->shortcodeFiles);

@@ -6,6 +6,8 @@ namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder;
 
 /**
  * Discovers and validates shortcode template files.
+ *
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
  */
 class ShortcodeLoader
 {

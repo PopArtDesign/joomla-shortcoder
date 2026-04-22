@@ -8,9 +8,4 @@
             <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
-    <source>
-        <include>
-            <directory>plg_content_shortcoder/src</directory>
-        </include>
-    </source>
 </phpunit>

@@ -1,9 +1,9 @@
 <?php
 
-namespace Joomla\Plugin\Content\Shortcoder\Test\Unit;
+namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Test\Unit;
 
-use Joomla\Plugin\Content\Shortcoder\ShortcodeProcessor;
 use PHPUnit\Framework\TestCase;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 class ShortcodeProcessorTest extends TestCase
 {

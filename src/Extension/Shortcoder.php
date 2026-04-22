@@ -1,9 +1,9 @@
 <?php
 
-namespace Joomla\Plugin\Content\Shortcoder\Extension;
+namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension;
 
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\Plugin\Content\Shortcoder\ShortcodeProcessor;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 \defined('_JEXEC') or die;
 

@@ -13,12 +13,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Joomla\\Plugin\\Content\\Shortcoder\\": "plg_content_shortcoder/src/"
+            "PopArtDesign\\JoomlaShortcoder\\Plugin\\Content\\Shortcoder\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Joomla\\Plugin\\Content\\Shortcoder\\Test\\": "tests/"
+            "PopArtDesign\\JoomlaShortcoder\\Plugin\\Content\\Shortcoder\\Test\\": "tests/"
         }
     },
     "require-dev": {

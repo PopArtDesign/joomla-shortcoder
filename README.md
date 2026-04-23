@@ -17,7 +17,7 @@ This plugin scans Joomla content (articles, categories, etc.) for shortcodes and
 
 ## Installation
 
-1.  Download the latest release package (a `.zip` file).
+1.  Download the [latest release package](https://github.com/PopArtDesign/joomla-shortcoder/releases/latest) (a `.zip` file).
 2.  In your Joomla administrator panel, go to `System` -> `Install` -> `Extensions`.
 3.  Upload the downloaded `.zip` file.
 4.  Enable the "Content - Shortcoder" plugin by going to `System` -> `Manage` -> `Plugins`.

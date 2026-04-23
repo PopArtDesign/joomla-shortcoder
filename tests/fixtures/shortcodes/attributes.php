@@ -1,3 +1,3 @@
 <?php
 
-echo "Hello, " . ($params['name'] ?? 'World');
+echo "Hello, " . ($attributes['name'] ?? 'World');

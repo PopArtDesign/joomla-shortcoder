@@ -48,9 +48,9 @@ LOREMIPSUM);
 }
 
 return [
-    'loremipsum' => function (array $params, string $content, object $item): string {
-        $paragraphsAttr = $params['paragraphs'] ?? '1'; // Default to 1 paragraph
-        $wordsAttr      = $params['words'] ?? '100'; // Default to 100 words
+    'loremipsum' => function (array $attributes, string $content, object $item): string {
+        $paragraphsAttr = $attributes['paragraphs'] ?? '1'; // Default to 1 paragraph
+        $wordsAttr      = $attributes['words'] ?? '100'; // Default to 100 words
 
         // --- Parse words attribute ---
         $minWordCount = 1;
@@ -91,7 +91,7 @@ return [
         if ($maxParagraphs !== null && $maxParagraphs > $minParagraphs) {
             $numberOfParagraphs = rand($minParagraphs, $maxParagraphs);
         }
-        
+
         // --- Generate output ---
         $output = [];
 

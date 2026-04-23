@@ -37,7 +37,7 @@ This plugin scans Joomla content (articles, categories, etc.) for shortcodes and
 
 \defined('_JEXEC') or die;
 
-$name = $params['name'] ?? 'World';
+$name = $attributes['name'] ?? 'World';
 ?>
 
 <strong>Hello, <?php echo $name; ?>!</strong>
@@ -73,7 +73,7 @@ For more advanced shortcodes or when you prefer to keep logic within PHP code ra
 \defined('_JEXEC') or die;
 
 return [
-    'hello' => fn (array $params) => sprintf('Hello, %s!', $params['name'] ?? 'World'),
+    'hello' => fn (array $attributes) => sprintf('Hello, %s!', $attributes['name'] ?? 'World'),
     'current_year' => fn() => (string) date('Y'),
 ];
 ```
@@ -90,7 +90,7 @@ You can then use it in your Joomla articles like this:
 
 Within your shortcode template files **or** callable shortcodes, you have access to:
 
-*   `$params`: An associative array of the attributes passed to the shortcode.
+*   `$attributes`: An associative array of the attributes passed to the shortcode.
 *   `$content`: The string of content nested between the opening and closing shortcode tags.
 *   `$item`: The Joomla content item object (e.g., article, category) being processed.
 
@@ -104,8 +104,8 @@ Shortcode attributes can be defined in several ways:
     *   **Unquoted**: Attributes without quotes `{tag attr=value}` are are allowed, but the value must not contain spaces or special characters. It will be parsed until the next space or the closing bracket.
 
 *   **Positional Attributes**: These are values passed directly without a key, like `{tag 'value1' 'value2'}`.
-    *   They are accessible in the `$params` array using numeric keys (0, 1, 2, ...).
-    *   Additionally, all positional attributes are collected into a special array accessible via the `'_'` key in the `$params` array (e.g., `$params['_'][0]`). This is useful for iterating over all positional arguments.
+    *   They are accessible in the `$attributes` array using numeric keys (0, 1, 2, ...).
+    *   Additionally, all positional attributes are collected into a special array accessible via the `'_'` key in the `$attributes` array (e.g., `$attributes['_'][0]`). This is useful for iterating over all positional arguments.
 
 **Examples**:
 
@@ -113,7 +113,7 @@ Shortcode attributes can be defined in several ways:
 {example unquoted=value single='single quoted' double="double quoted value with spaces" 'positional value 1' positional_value_2}
 ```
 
-In your shortcode, `$params` would look something like this:
+In your shortcode, `$attributes` would look something like this:
 
 ```php
 [

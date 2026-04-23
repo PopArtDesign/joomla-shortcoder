@@ -54,9 +54,9 @@ class ShortcodeProcessor
             $content    = $matches[3] ?? '';
 
             $content = $this->processShortcodes($content, $item, $maxDepth - 1);
-            $params  = $this->parseAttributes(trim($attrString));
+            $attributes  = $this->parseAttributes(trim($attrString));
 
-            return $this->executeShortcode($tag, $params, $content, $item);
+            return $this->executeShortcode($tag, $attributes, $content, $item);
         }, $text, -1);
     }
 
@@ -92,9 +92,9 @@ class ShortcodeProcessor
      */
     private function parseAttributes(string $attrString): array
     {
-        $params = [];
+        $attributes = [];
         if ($attrString === '') {
-            return $params;
+            return $attributes;
         }
 
         $pattern = '/(?:([a-zA-Z0-9_\-]+)\s*=\s*)?((?:"[^"]*")|(?:\'[^\']*\')|(?:[^\s"\'<>]+))/';
@@ -109,37 +109,37 @@ class ShortcodeProcessor
             }
 
             if (!empty($match[1])) { // Named attribute
-                $params[$match[1]] = $value;
+                $attributes[$match[1]] = $value;
             } else { // Positional attribute
-                $params[count($positional)] = $value;
+                $attributes[count($positional)] = $value;
                 $positional[] = $value;
             }
         }
 
         if (!empty($positional)) {
-            $params['_'] = $positional;
+            $attributes['_'] = $positional;
         }
 
-        return $params;
+        return $attributes;
     }
 
     /**
      * Executes the shortcode handler (either a callable or a file) to generate its output.
      *
      * @param string $tag The shortcode tag.
-     * @param array  $params An associative array of attributes passed to the shortcode.
+     * @param array  $attributes An associative array of attributes passed to the shortcode.
      * @param string $content The content nested between the shortcode tags.
      * @param object $item The Joomla content item object.
      *
      * @return string The generated output of the shortcode.
      */
-    private function executeShortcode(string $tag, array $params, string $content, object $item): string
+    private function executeShortcode(string $tag, array $attributes, string $content, object $item): string
     {
         try {
             $handler = $this->shortcodes[$tag];
 
             if (\is_callable($handler)) {
-                return (string) $handler($params, $content, $item);
+                return (string) $handler($attributes, $content, $item);
             }
 
             \ob_start();

@@ -2,8 +2,11 @@
 
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension;
 
+use Joomla\CMS\Event\Content\ContentPrepareEvent;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Event\EventInterface;
+use Joomla\Event\SubscriberInterface;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
@@ -17,7 +20,7 @@ use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
  *
  * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
  */
-class Shortcoder extends CMSPlugin
+class Shortcoder extends CMSPlugin implements SubscriberInterface
 {
     private ShortcodeProcessor $processor;
 
@@ -32,18 +35,34 @@ class Shortcoder extends CMSPlugin
     }
 
     /**
+     * @inheritdoc
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onContentPrepare' => 'onContentPrepare',
+        ];
+    }
+
+    /**
      * Event method that is fired before content is prepared for display.
      * This method processes shortcodes within various text properties of the content item.
      *
-     * @param string $context The context of the content being passed to the plugin.
-     * @param object $item    The content item object.
-     * @param object $params  The content item's parameters.
-     * @param int    $page    The 'page' number (unused here).
+     * @param ContentPrepareEvent $event The content prepare event.
      *
      * @return void
      */
-    public function onContentPrepare($context, &$item, &$params, $page = 0): void
+    public function onContentPrepare(EventInterface $event): void
     {
+        if ($event instanceof ContentPrepareEvent) {
+            $context = $event->getContext();
+            $context = $event->getSubject();
+        } else {
+            // Joomla 4.x
+            $context = $event->getArgument(0);
+            $item = $event->getArgument(1);
+        }
+
         if (!in_array($context, ['com_content.article', 'com_content.category'], true)) {
             return;
         }

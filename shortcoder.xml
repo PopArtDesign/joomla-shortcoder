@@ -5,7 +5,7 @@
     <authorEmail>oleg-voronkovich@yandex.ru</authorEmail>
 	<authorUrl>https://popartdesign.ru</authorUrl>
     <creationDate>2026-04-21</creationDate>
-    <version>1.0.0</version>
+    <version>0.0.1</version>
     <copyright>(C) 2026 Oleg Voronkovich</copyright>
     <license>MIT</license>
     <namespace path="src">PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder</namespace>

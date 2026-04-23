@@ -24,7 +24,8 @@ class ShortcodeProcessor
     /**
      * ShortcodeProcessor constructor.
      *
-     * @param array $shortcodes An associative array where keys are shortcode tags and values are their handlers (file paths or callables).
+     * @param array $shortcodes An associative array where keys are shortcode tags
+     *                          and values are their handlers (file paths or callables).
      */
     public function __construct(array $shortcodes)
     {
@@ -34,8 +35,8 @@ class ShortcodeProcessor
     /**
      * Processes the given text, replacing shortcodes with their rendered output.
      *
-     * @param string $text The input text potentially containing shortcodes.
-     * @param object $item The Joomla content item object (e.g., article, category) being processed.
+     * @param string $text     The input text potentially containing shortcodes.
+     * @param object $item     The Joomla content item object (e.g., article, category) being processed.
      * @param int    $maxDepth The maximum depth for processing nested shortcodes.
      *
      * @return string The processed text with shortcodes replaced.
@@ -130,10 +131,10 @@ class ShortcodeProcessor
     /**
      * Executes the shortcode handler (either a callable or a file) to generate its output.
      *
-     * @param string $tag The shortcode tag.
+     * @param string $tag        The shortcode tag.
      * @param array  $attributes An associative array of attributes passed to the shortcode.
-     * @param string $content The content nested between the shortcode tags.
-     * @param object $item The Joomla content item object.
+     * @param string $content    The content nested between the shortcode tags.
+     * @param object $item       The Joomla content item object.
      *
      * @return string The generated output of the shortcode.
      */

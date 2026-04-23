@@ -98,14 +98,32 @@ Within your shortcode template files **or** callable shortcodes, you have access
 
 Shortcode attributes can be defined in several ways:
 
-*  **Double Quotes**: Attributes enclosed in double quotes `{tag attr="value"}` allow for values containing spaces and special characters. This is generally the recommended approach.
-*   **Single Quotes**: Attributes enclosed in single quotes `{tag attr='value'}` also allow for values containing spaces and special characters.
-*   **Unquoted**: Attributes without quotes `{tag attr=value}` are allowed, but the value must not contain spaces or special characters. It will be parsed until the next space or the closing bracket.
+*   **Named Attributes (key="value")**: These are the standard `key="value"` pairs.
+    *   **Double Quotes**: Attributes enclosed in double quotes `{tag attr="value"}` allow for values containing spaces and special characters. This is generally the recommended approach.
+    *   **Single Quotes**: Attributes enclosed in single quotes `{tag attr='value'}` also allow for values containing spaces and special characters.
+    *   **Unquoted**: Attributes without quotes `{tag attr=value}` are are allowed, but the value must not contain spaces or special characters. It will be parsed until the next space or the closing bracket.
+
+*   **Positional Attributes**: These are values passed directly without a key, like `{tag 'value1' 'value2'}`.
+    *   They are accessible in the `$params` array using numeric keys (0, 1, 2, ...).
+    *   Additionally, all positional attributes are collected into a special array accessible via the `'_'` key in the `$params` array (e.g., `$params['_'][0]`). This is useful for iterating over all positional arguments.
 
 **Examples**:
 
 ```
-{example unquoted=value single='single quoted' double="double quoted value with spaces"}
+{example unquoted=value single='single quoted' double="double quoted value with spaces" 'positional value 1' positional_value_2}
+```
+
+In your shortcode, `$params` would look something like this:
+
+```php
+[
+    'unquoted' => 'value',
+    'single' => 'single quoted',
+    'double' => 'double quoted value with spaces',
+    0 => 'positional value 1',
+    1 => 'positional_value_2',
+    '_' => ['positional value 1', 'positional_value_2'],
+]
 ```
 
 ## License

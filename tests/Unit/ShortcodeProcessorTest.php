@@ -397,4 +397,89 @@ class ShortcodeProcessorTest extends TestCase
             throw $e; // Re-throw to satisfy expectException
         }
     }
+
+    public function testShortcodeWithSinglePositionalAttribute(): void
+    {
+        $shortcodes = [
+            'positional' => function (array $params): string {
+                return 'Value: ' . ($params[0] ?? '');
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = "Test {positional 'value1'}!";
+
+        $this->assertSame(
+            'Test Value: value1!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
+    public function testShortcodeWithMultiplePositionalAttributes(): void
+    {
+        $shortcodes = [
+            'positional' => function (array $params): string {
+                return "Value1: {$params[0]}, Value2: {$params[1]}";
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = "Test {positional 'value1' 'value2'}!";
+
+        $this->assertSame(
+            'Test Value1: value1, Value2: value2!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
+    public function testShortcodeWithMixedNamedAndPositionalAttributes(): void
+    {
+        $shortcodes = [
+            'mixed' => function (array $params): string {
+                return "Name: {$params['name']}, Value1: {$params[0]}, Value2: {$params[1]}";
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = "Test {mixed name='test' 'value1' 'value2'}!";
+
+        $this->assertSame(
+            'Test Name: test, Value1: value1, Value2: value2!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
+    public function testShortcodeWithMixedPositionalAndNamedAttributes(): void
+    {
+        $shortcodes = [
+            'mixed' => function (array $params): string {
+                return "Value1: {$params[0]}, Name: {$params['name']}, Value2: {$params[1]}";
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = "Test {mixed 'value1' name='test' 'value2'}!";
+
+        $this->assertSame(
+            'Test Value1: value1, Name: test, Value2: value2!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
+    public function testShortcodeWithPositionalAttributesInSpecialUnderscoreVar(): void
+    {
+        $shortcodes = [
+            'mixed' => function (array $params): string {
+                return "Name: {$params['name']}, Positional: " . implode(', ', $params['_']);
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = "Test {mixed 'value1' name='test' 'value2'}!";
+
+        $this->assertSame(
+            'Test Name: test, Positional: value1, value2!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
 }

@@ -79,9 +79,7 @@ class ShortcodeProcessor
 
         $tags = \implode('|', \array_map(fn ($t) => \preg_quote($t, '~'), \array_keys($this->shortcodes)));
 
-        $this->regexPattern = '~\{(' . $tags . ')' .
-                              '((?:\s+[a-zA-Z0-9_\-]+=(?:"[^"]*"|\'[^\']*\'|[^"\'\s]+))*)\}' .
-                              '(?:(.*)\{/\1\})?~s';
+        $this->regexPattern = '~\{(' . $tags . ')(.*?)\}' . '(?:(.*)\{/\1\})?~s';
     }
 
     /**
@@ -99,18 +97,27 @@ class ShortcodeProcessor
             return $params;
         }
 
-        \preg_match_all('/([a-zA-Z0-9_\-]+)\s*=\s*(?:(?:"([^"]*)")|(?:\'([^\']*)\')|([^\s"\'<>]+))/', $attrString, $matches, \PREG_SET_ORDER);
+        $pattern = '/(?:([a-zA-Z0-9_\-]+)\s*=\s*)?((?:"[^"]*")|(?:\'[^\']*\')|(?:[^\s"\'<>]+))/';
+        \preg_match_all($pattern, $attrString, $matches, \PREG_SET_ORDER);
+
+        $positional = [];
         foreach ($matches as $match) {
-            $value = '';
-            // Group 2 for double-quoted, Group 3 for single-quoted, Group 4 for unquoted
-            if (isset($match[2]) && $match[2] !== '') {
-                $value = $match[2];
-            } elseif (isset($match[3]) && $match[3] !== '') {
-                $value = $match[3];
-            } elseif (isset($match[4]) && $match[4] !== '') {
-                $value = $match[4];
+            $value = $match[2];
+            // Trim quotes
+            if (\strpos($value, '"') === 0 || \strpos($value, "'") === 0) {
+                $value = \substr($value, 1, -1);
             }
-            $params[$match[1]] = $value;
+
+            if (!empty($match[1])) { // Named attribute
+                $params[$match[1]] = $value;
+            } else { // Positional attribute
+                $params[count($positional)] = $value;
+                $positional[] = $value;
+            }
+        }
+
+        if (!empty($positional)) {
+            $params['_'] = $positional;
         }
 
         return $params;

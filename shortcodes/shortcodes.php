@@ -48,7 +48,7 @@ LOREMIPSUM);
 }
 
 return [
-    'loremipsum' => function (array $attributes, string $content, object $item): string {
+    'loremipsum' => function (array $attributes): string {
         $paragraphsAttr = $attributes['paragraphs'] ?? '1'; // Default to 1 paragraph
         $wordsAttr      = $attributes['words'] ?? '100'; // Default to 100 words
 

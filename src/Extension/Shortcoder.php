@@ -69,7 +69,7 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
 
         $textProperties = ['text', 'introtext', 'fulltext', 'description'];
         foreach ($textProperties as $prop) {
-            if (isset($item->$prop) && is_string($item->$prop) && $item->$prop !== '') {
+            if (isset($item->$prop) && \is_string($item->$prop) && \strpos($item->$prop, '{') !== false) {
                 try {
                     $item->$prop = $this->processor->processShortcodes($item->$prop, $item);
                 } catch (ShortcodeProcessingException $e) {

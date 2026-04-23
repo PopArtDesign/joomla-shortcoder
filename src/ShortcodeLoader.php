@@ -36,7 +36,9 @@ class ShortcodeLoader
         $shortcodes = [];
 
         foreach ($this->paths as $dir) {
-            if (!\is_dir($dir) || !\is_readable($dir)) {
+            $dir = \realpath($dir);
+
+            if (false === $dir || !\is_dir($dir) || !\is_readable($dir)) {
                 throw new \RuntimeException(
                     \sprintf('Shortcodes directory "%s" not exists or is not readable.', $dir)
                 );
@@ -56,7 +58,7 @@ class ShortcodeLoader
                 if (!\preg_match('/^[a-zA-Z0-9_\-]+$/', $basename)) {
                     continue;
                 }
-                if (\strpos($realPath, \realpath($dir) . \DIRECTORY_SEPARATOR) !== 0) {
+                if (\strpos($realPath, $dir . \DIRECTORY_SEPARATOR) !== 0) {
                     continue;
                 }
 

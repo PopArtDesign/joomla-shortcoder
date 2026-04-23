@@ -6,16 +6,13 @@ namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Shortcodes;
 
 if (!\function_exists(__NAMESPACE__ . '\loremIpsum')) {
     /**
-     * Generates a Lorem Ipsum paragraph with a specified word count range.
+     * Generates a Lorem Ipsum paragraph with a specified word count.
      *
-     * @param int      $minWordCount Minimum number of words for the paragraph.
-     * @param int|null $maxWordCount Maximum number of words for the paragraph.
-     *
-     * If $maxWordCount is null or less than $minWordCount, $minWordCount is used as exact word count.
+     * @param int $wordCount The exact number of words for the paragraph.
      *
      * @return string A Lorem Ipsum paragraph.
      */
-    function loremIpsum(int $minWordCount = 1, ?int $maxWordCount = null): string
+    function loremIpsum(int $wordCount = 1): string
     {
         static $words = null;
 
@@ -28,16 +25,11 @@ nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor
 in hendrerit in vulputate velit esse molestie consequat, vel illum dolore
 eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim
 qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
-LOREMIPSUM);
+LOREMIPSUM
+            );
         }
 
-        // Determine the number of words for this paragraph
-        $chosenWordCount = $minWordCount;
-        if ($maxWordCount !== null && $maxWordCount > $minWordCount) {
-            $chosenWordCount = rand($minWordCount, $maxWordCount);
-        }
-
-        $currentParagraphWords = array_slice($words, 0, $chosenWordCount);
+        $currentParagraphWords = array_slice($words, 0, $wordCount);
         $text = implode(' ', $currentParagraphWords);
 
         // Ensure it ends with a dot
@@ -72,7 +64,12 @@ return [
             $maxWordCount = $minWordCount;
         }
 
-        return loremIpsum($minWordCount, $maxWordCount);
+        $chosenWordCount = $minWordCount;
+        if ($maxWordCount !== null && $maxWordCount > $minWordCount) {
+            $chosenWordCount = rand($minWordCount, $maxWordCount);
+        }
+
+        return loremIpsum($chosenWordCount);
     },
     'repeat' => function ($attributes, $content) {
         $repeatAttr = $attributes[0] ?? '1';

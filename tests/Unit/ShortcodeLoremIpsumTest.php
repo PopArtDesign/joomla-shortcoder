@@ -11,7 +11,7 @@ class ShortcodeLoremIpsumTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        $shortcodes = require __DIR__.'/../../shortcodes/shortcodes.php';
+        $shortcodes = require \dirname(__DIR__, 2) . '/shortcodes/shortcodes.php';
 
         self::$processor = new ShortcodeProcessor($shortcodes);
     }

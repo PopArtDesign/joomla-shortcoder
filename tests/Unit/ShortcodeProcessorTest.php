@@ -301,9 +301,9 @@ class ShortcodeProcessorTest extends TestCase
     public function testShortcodeMaxDepthIsRespected(): void
     {
         $shortcodes = [
-            'nested_a' => fn(array $attributes, string $content): string => "A($content)A",
-            'nested_b' => fn(array $attributes, string $content): string => "B($content)B",
-            'nested_c' => fn(array $attributes, string $content): string => "C($content)C",
+            'nested_a' => fn (array $attributes, string $content): string => "A($content)A",
+            'nested_b' => fn (array $attributes, string $content): string => "B($content)B",
+            'nested_c' => fn (array $attributes, string $content): string => "C($content)C",
         ];
         $processor = new ShortcodeProcessor($shortcodes);
 

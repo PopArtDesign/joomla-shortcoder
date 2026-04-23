@@ -132,57 +132,79 @@ In your shortcode, `$attributes` would look something like this:
 
 Here are some real-world examples of how you might use Shortcoder for common website elements.
 
-### YouTube Video Embed
+### Button
 
-You can create a shortcode to easily embed YouTube videos by their ID.
+You can create a shortcode to easily generate a styled button with a link.
 
-**Example `shortcodes/youtube.php`:**
+**Example `shortcodes/button.php`:**
 
 ```php
 <?php
 
 \defined('_JEXEC') or die;
 
-$videoId = $attributes[0] ?? ''; // Positional attribute for video ID
-$width   = $attributes['width'] ?? '560';
-$height  = $attributes['height'] ?? '315';
-
-if (!$videoId) {
-    return '';
-}
+$url    = $attributes[0] ?? '#'; // Positional attribute for URL
+$target = $attributes['target'] ?? '_self';
+$class  = $attributes['class'] ?? 'btn btn-primary';
+$text   = $content ?: 'Click Here'; // Use content if provided, otherwise default text
 ?>
 
-<div class="video-container">
-    <iframe
-        width="<?php echo htmlspecialchars($width); ?>"
-        height="<?php echo htmlspecialchars($height); ?>"
-        src="https://www.youtube.com/embed/<?php echo htmlspecialchars($videoId); ?>"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-    </iframe>
-</div>
+<a href="<?php echo htmlspecialchars($url); ?>" target="<?php echo htmlspecialchars($target); ?>" class="<?php echo htmlspecialchars($class); ?>">
+    <?php echo htmlspecialchars($text); ?>
+</a>
 ```
 
 You can then use it in your Joomla articles like this:
 
 ```
-{youtube o2gY98S8b5Q width="640" height="360"}
+{button "https://example.com/learn-more" class="btn-success" target="_blank"}Learn More{/button}
 ```
 
 This will be rendered as:
 
 ```html
-<div class="video-container">
-    <iframe
-        width="640"
-        height="360"
-        src="https://www.youtube.com/embed/o2gY98S8b5Q"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-    </iframe>
-</div>
+<a href="https://example.com/learn-more" target="_blank" class="btn-success">
+    Learn More
+</a>
+```
+
+### Details (Show/Hide)
+
+A "details" shortcode is a great way to create collapsible content sections for things like spoilers or FAQs.
+
+**Example `shortcodes/details.php`:**
+
+```php
+<?php
+
+\defined('_JEXEC') or die;
+
+$summary = $attributes['summary'] ?? 'Click to see more';
+?>
+
+<details>
+    <summary><?php echo htmlspecialchars($summary); ?></summary>
+    <div>
+        <?php echo $content; ?>
+    </div>
+</details>
+```
+
+You can then use it in your Joomla articles like this:
+
+```
+{details summary="Read the full story"}This is the hidden content that will be revealed when the user clicks on the summary text.{/details}
+```
+
+This will be rendered as:
+
+```html
+<details>
+    <summary>Read the full story</summary>
+    <div>
+        This is the hidden content that will be revealed when the user clicks on the summary text.
+    </div>
+</details>
 ```
 
 ### Alert Box

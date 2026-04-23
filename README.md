@@ -8,7 +8,9 @@ This plugin scans Joomla content (articles, categories, etc.) for shortcodes and
 
 ## Features
 
-*   **Simple Syntax**: Use curly braces for shortcodes. They can be self-closing (`{tag}` or `{tag attr="value"}`) or contain content between opening and closing tags (`{tag attr="value"}content{/tag}`).
+*   **Simple Syntax**: Use curly braces for shortcodes:
+    - self-closing: `{tag}` or `{tag attr="value"}`.
+    - with content between opening and closing tags: `{tag attr="value"}content{/tag}`.
 *   **Template-Based**: Each file-based shortcode corresponds to a simple PHP file. No database, no complex UI.
 *   **Callable-Based**: Define shortcodes directly using PHP functions for more complex logic.
 *   **Developer-Friendly**: Easily create new shortcodes by adding a PHP file or defining a callable.
@@ -124,6 +126,97 @@ In your shortcode, `$attributes` would look something like this:
     1 => 'positional_value_2',
     '_' => ['positional value 1', 'positional_value_2'],
 ]
+```
+
+## Real-world Examples
+
+Here are some real-world examples of how you might use Shortcoder for common website elements.
+
+### YouTube Video Embed
+
+You can create a shortcode to easily embed YouTube videos by their ID.
+
+**Example `shortcodes/youtube.php`:**
+
+```php
+<?php
+
+\defined('_JEXEC') or die;
+
+$videoId = $attributes[0] ?? ''; // Positional attribute for video ID
+$width   = $attributes['width'] ?? '560';
+$height  = $attributes['height'] ?? '315';
+
+if (!$videoId) {
+    return '';
+}
+?>
+
+<div class="video-container">
+    <iframe
+        width="<?php echo htmlspecialchars($width); ?>"
+        height="<?php echo htmlspecialchars($height); ?>"
+        src="https://www.youtube.com/embed/<?php echo htmlspecialchars($videoId); ?>"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+    </iframe>
+</div>
+```
+
+You can then use it in your Joomla articles like this:
+
+```
+{youtube o2gY98S8b5Q width="640" height="360"}
+```
+
+This will be rendered as:
+
+```html
+<div class="video-container">
+    <iframe
+        width="640"
+        height="360"
+        src="https://www.youtube.com/embed/o2gY98S8b5Q"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+    </iframe>
+</div>
+```
+
+### Alert Box
+
+An alert box shortcode demonstrates using content and named attributes for styling.
+
+**Example `shortcodes/alert.php`:**
+
+```php
+<?php
+
+\defined('_JEXEC') or die;
+
+$type  = $attributes['type'] ?? 'info'; // success, warning, danger, info
+$class = $attributes['class'] ?? '';
+?>
+
+<div class="alert alert-<?php echo htmlspecialchars($type); ?> <?php echo htmlspecialchars($class); ?>" role="alert">
+    <?php echo $content; ?>
+</div>
+```
+
+You can then use it in your Joomla articles like this:
+
+```
+{alert type="warning"}This is a warning message!{/alert}
+```
+
+This will be rendered as:
+
+```html
+<div class="alert alert-warning" role="alert">
+    This is a warning message!
+</div>
 ```
 
 ## License

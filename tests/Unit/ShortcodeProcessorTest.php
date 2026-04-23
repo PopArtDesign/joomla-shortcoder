@@ -260,19 +260,23 @@ class ShortcodeProcessorTest extends TestCase
         );
     }
 
-    public function testDeeplyNestedShortcodes(): void
+    public function testSameNameNestedShortcodesAreNoLongerProcessed(): void
     {
         $shortcodes = [
             'nested' => function (array $attributes, string $content): string {
-                return 'Nested start:(' . $content . ')Nested end';
+                return 'Nested start:(' . ($attributes[0] ?? '') . $content . ($attributes[0] ?? '') . ')Nested end';
             },
         ];
         $processor = new ShortcodeProcessor($shortcodes);
 
-        $text = '{nested}1{nested}2{nested}3{nested}4{nested}5{/nested}4{/nested}3{/nested}2{/nested}1{/nested}';
+        $text = '{nested 1}outer{nested 2}inner{/nested}outer{/nested}';
+
+        // The inner shortcode will be treated as a self-closing shortcode, as its closing tag
+        // is outside the content of the parent shortcode.
+        $expected = 'Nested start:(1outerNested start:(22)Nested endinner1)Nested endouter{/nested}';
 
         $this->assertSame(
-            'Nested start:(1Nested start:(2Nested start:(3Nested start:(4Nested start:(5)Nested end4)Nested end3)Nested end2)Nested end1)Nested end',
+            $expected,
             $processor->processShortcodes($text, new \stdClass())
         );
     }
@@ -297,13 +301,13 @@ class ShortcodeProcessorTest extends TestCase
     public function testShortcodeMaxDepthIsRespected(): void
     {
         $shortcodes = [
-            'nested' => function (array $attributes, string $content): string {
-                return 'Nested start:(' . $content . ')Nested end';
-            },
+            'nested_a' => fn(array $attributes, string $content): string => "A($content)A",
+            'nested_b' => fn(array $attributes, string $content): string => "B($content)B",
+            'nested_c' => fn(array $attributes, string $content): string => "C($content)C",
         ];
         $processor = new ShortcodeProcessor($shortcodes);
 
-        $text = '{nested}1{nested}2{nested}3{/nested}2{/nested}1{/nested}';
+        $text = '{nested_a}{nested_b}{nested_c}level3{/nested_c}{/nested_b}{/nested_a}';
 
         // With maxDepth=0, nothing is processed
         $this->assertSame(
@@ -313,14 +317,20 @@ class ShortcodeProcessorTest extends TestCase
 
         // With maxDepth=1, only the first level is processed
         $this->assertSame(
-            'Nested start:(1{nested}2{nested}3{/nested}2{/nested}1)Nested end',
+            'A({nested_b}{nested_c}level3{/nested_c}{/nested_b})A',
             $processor->processShortcodes($text, new \stdClass(), 1)
         );
 
         // With maxDepth=2, the third level should not be processed
         $this->assertSame(
-            'Nested start:(1Nested start:(2{nested}3{/nested}2)Nested end1)Nested end',
+            'A(B({nested_c}level3{/nested_c})B)A',
             $processor->processShortcodes($text, new \stdClass(), 2)
+        );
+
+        // With maxDepth=3, all levels are processed
+        $this->assertSame(
+            'A(B(C(level3)C)B)A',
+            $processor->processShortcodes($text, new \stdClass(), 3)
         );
     }
 

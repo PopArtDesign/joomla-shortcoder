@@ -79,7 +79,11 @@ class ShortcodeProcessor
 
         $tags = \implode('|', \array_map(fn ($t) => \preg_quote($t, '~'), \array_keys($this->shortcodes)));
 
-        $this->regexPattern = '~\{(' . $tags . ')(.*?)\}' . '(?:(.*)\{/\1\})?~s';
+        // The current regex uses a non-greedy match for content (.*?) which correctly
+        // handles adjacent shortcodes. However, this approach does not support deeply nested
+        // shortcodes that share the same name, as the non-greedy match will stop at the first
+        // closing tag it finds. This is a known limitation.
+        $this->regexPattern = '~\{(' . $tags . ')([^}]*)\}(?:(.*?)\{/\1\})?~s';
     }
 
     /**

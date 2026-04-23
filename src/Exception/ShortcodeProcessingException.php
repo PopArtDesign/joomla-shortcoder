@@ -12,6 +12,6 @@ namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception;
  *
  * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
  */
-class ShortcodeProcessingException extends \Exception
+class ShortcodeProcessingException extends \RuntimeException implements ExceptionInterface
 {
 }

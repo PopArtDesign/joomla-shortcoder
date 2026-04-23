@@ -2,6 +2,8 @@
 
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder;
 
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeLoadingException;
+
 \defined('_JEXEC') or die;
 
 /**
@@ -29,7 +31,7 @@ class ShortcodeLoader
      *
      * @return array An associative array of shortcode tags and their file paths.
      *
-     * @throws \RuntimeException If a directory is not readable.
+     * @throws ShortcodeLoadingException If a directory is not readable.
      */
     public function loadShortcodes(): array
     {
@@ -39,7 +41,7 @@ class ShortcodeLoader
             $path = \realpath($path);
 
             if (false === $path || !\is_dir($path) || !\is_readable($path)) {
-                throw new \RuntimeException(
+                throw new ShortcodeLoadingException(
                     \sprintf('Shortcodes directory "%s" not exists or is not readable.', $path)
                 );
             }
@@ -81,7 +83,7 @@ class ShortcodeLoader
 
         $callableShortcodes = require $shortcodesFile;
         if (!\is_array($callableShortcodes)) {
-            throw new \RuntimeException(
+            throw new ShortcodeLoadingException(
                 \sprintf('Shortcodes file "%s" must return an array.', $shortcodesFile)
             );
         }

@@ -35,54 +35,83 @@ class ShortcodeLoader
     {
         $shortcodes = [];
 
-        foreach ($this->paths as $dir) {
-            $dir = \realpath($dir);
+        foreach ($this->paths as $path) {
+            $path = \realpath($path);
 
-            if (false === $dir || !\is_dir($dir) || !\is_readable($dir)) {
+            if (false === $path || !\is_dir($path) || !\is_readable($path)) {
                 throw new \RuntimeException(
-                    \sprintf('Shortcodes directory "%s" not exists or is not readable.', $dir)
+                    \sprintf('Shortcodes directory "%s" not exists or is not readable.', $path)
                 );
             }
 
-            foreach (\glob($dir . '/*.php', \GLOB_NOSORT | \GLOB_ERR) as $filePath) {
-                $basename = \basename($filePath, '.php');
-                if ($basename === 'shortcodes') {
-                    continue;
-                }
+            $shortcodes = \array_merge(
+                $shortcodes,
+                $this->loadFileBasedShortcodes($path),
+                $this->loadCallableShortcodes($path),
+            );
+        }
 
-                $realPath = \realpath($filePath);
-                if ($realPath === false) {
-                    continue;
-                }
+        return $shortcodes;
+    }
 
-                if (!\preg_match('/^[a-zA-Z0-9_\-]+$/', $basename)) {
-                    continue;
-                }
-                if (\strpos($realPath, $dir . \DIRECTORY_SEPARATOR) !== 0) {
-                    continue;
-                }
+    private function loadFileBasedShortcodes(string $path): array
+    {
+        $shortcodes = [];
 
-                // If a shortcode with the same name exists in multiple paths,
-                // the last one found will overwrite the previous one.
-                $shortcodes[$basename] = $realPath;
+        foreach (\glob($path . '/*.php', \GLOB_NOSORT | \GLOB_ERR) as $filePath) {
+            $basename = \basename($filePath, '.php');
+            if ($basename === 'shortcodes') {
+                continue;
+            }
+            if (!$this->isValidTagName($basename)) {
+                continue;
             }
 
-            // Load callable shortcodes from shortcodes.php
-            $callableShortcodesFile = $dir . '/shortcodes.php';
-            if (\is_file($callableShortcodesFile) && \is_readable($callableShortcodesFile)) {
-                $callableShortcodes = require $callableShortcodesFile;
+            $realPath = \realpath($filePath);
+            if ($realPath === false) {
+                continue;
+            }
+            if (\strpos($realPath, $path . \DIRECTORY_SEPARATOR) !== 0) {
+                continue;
+            }
 
-                if (\is_array($callableShortcodes)) {
-                    foreach ($callableShortcodes as $tag => $handler) {
-                        if (\is_string($tag) && \preg_match('/^[a-zA-Z0-9_\-]+$/', $tag) && \is_callable($handler)) {
-                            // Callable shortcodes from file will overwrite file-based shortcodes with same name
-                            $shortcodes[$tag] = $handler;
-                        }
-                    }
-                }
+            $shortcodes[$basename] = $realPath;
+        }
+
+        return $shortcodes;
+    }
+
+    private function loadCallableShortcodes(string $path): array
+    {
+        $shortcodes = [];
+
+        $shortcodesFile = $path . '/shortcodes.php';
+        if (!\file_exists($shortcodesFile)) {
+            return $shortcodes;
+        }
+
+        $callableShortcodes = require $shortcodesFile;
+        if (!\is_array($callableShortcodes)) {
+            throw new \RuntimeException(
+                \sprintf('Shortcodes file "%s" must return an array.', $shortcodesFile)
+            );
+        }
+
+        foreach ($callableShortcodes as $tag => $handler) {
+            if (!\is_string($tag) || !$this->isValidTagName($tag)) {
+                continue;
+            }
+
+            if (\is_callable($handler)) {
+                $shortcodes[$tag] = $handler;
             }
         }
 
         return $shortcodes;
+    }
+
+    private function isValidTagName(string $tag): bool
+    {
+        return \preg_match('/^[a-zA-Z0-9_\-]+$/', $tag) === 1;
     }
 }

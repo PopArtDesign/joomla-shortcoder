@@ -60,22 +60,11 @@ class ShortcodeLoader
 
         foreach (\glob($path . '/*.php', \GLOB_NOSORT | \GLOB_ERR) as $filePath) {
             $basename = \basename($filePath, '.php');
-            if ($basename === 'shortcodes') {
-                continue;
-            }
-            if (!$this->isValidTagName($basename)) {
+            if ($basename === 'shortcodes' || !$this->isValidTagName($basename)) {
                 continue;
             }
 
-            $realPath = \realpath($filePath);
-            if ($realPath === false) {
-                continue;
-            }
-            if (\strpos($realPath, $path . \DIRECTORY_SEPARATOR) !== 0) {
-                continue;
-            }
-
-            $shortcodes[$basename] = $realPath;
+            $shortcodes[$basename] = $filePath;
         }
 
         return $shortcodes;

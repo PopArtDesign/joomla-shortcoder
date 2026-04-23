@@ -58,14 +58,14 @@ return [
 
         if (\is_string($wordsAttr) && \strpos($wordsAttr, ',') !== false) {
             list($min, $max) = explode(',', $wordsAttr);
-            $minWordCount = max(1, (int) $min);
+            $minWordCount = (int) $min;
             $maxWordCount = (int) $max;
 
             if ($maxWordCount < $minWordCount) {
                 $maxWordCount = $minWordCount; // Ensure valid range
             }
         } else {
-            $minWordCount = max(1, (int) $wordsAttr);
+            $minWordCount = (int) $wordsAttr;
             $maxWordCount = $minWordCount; // Exact count if only one number
         }
 
@@ -75,14 +75,14 @@ return [
 
         if (\is_string($paragraphsAttr) && \strpos($paragraphsAttr, ',') !== false) {
             list($min, $max) = explode(',', $paragraphsAttr);
-            $minParagraphs = max(1, (int) $min);
+            $minParagraphs = (int) $min;
             $maxParagraphs = (int) $max;
 
             if ($maxParagraphs < $minParagraphs) {
                 $maxParagraphs = $minParagraphs; // Ensure valid range
             }
         } else {
-            $minParagraphs = max(1, (int) $paragraphsAttr);
+            $minParagraphs = (int) $paragraphsAttr;
             $maxParagraphs = $minParagraphs; // Exact count if only one number
         }
 

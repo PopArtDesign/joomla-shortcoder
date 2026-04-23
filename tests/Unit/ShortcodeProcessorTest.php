@@ -482,4 +482,21 @@ class ShortcodeProcessorTest extends TestCase
             $processor->processShortcodes($text, new \stdClass())
         );
     }
+
+    public function testAdjacentShortcodesWithSameName(): void
+    {
+        $shortcodes = [
+            'repeat' => function (array $attributes, string $content): string {
+                return str_repeat($content, (int) ($attributes[0] ?? 1));
+            },
+        ];
+        $processor = new ShortcodeProcessor($shortcodes);
+
+        $text = '{repeat 2}Hello{/repeat}{repeat 3}World!{/repeat}';
+
+        $this->assertSame(
+            'HelloHelloWorld!World!World!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
 }

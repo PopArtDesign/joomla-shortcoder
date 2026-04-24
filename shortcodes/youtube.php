@@ -7,7 +7,6 @@ $videoId = $attributes[0] ?? '';
 // Check if the input is a URL and parse it
 if (strpos($videoId, 'youtu') !== false) {
     $url = $videoId;
-    // Add scheme if missing for parse_url to work correctly
     if (strpos($url, 'http') !== 0) {
         $url = 'https://' . $url;
     }
@@ -47,9 +46,9 @@ $allow   = $attributes['allow'] ?? 'accelerometer; autoplay; clipboard-write; en
 $title   = $attributes['title'] ?? 'YouTube video player';
 $class   = $attributes['class'] ?? 'youtube-container';
 
-$parts = explode(':', $start);
-if (count($parts) == 2) {
-    $start = (int) $parts[0] * 60 + (int) $parts[1];
+$startParts = explode(':', $start);
+if (count($startParts) == 2) {
+    $start = (int) $startParts[0] * 60 + (int) $startParts[1];
 }
 
 $src = sprintf('https://www.youtube.com/embed/%s?start=%d', htmlspecialchars($videoId), (int) $start);

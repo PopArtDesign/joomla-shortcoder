@@ -7,14 +7,13 @@ use PHPUnit\Framework\TestCase;
 
 class ShortcodeYoutubeTest extends TestCase
 {
-    private $processor;
+    private ShortcodeProcessor $processor;
 
     protected function setUp(): void
     {
-        $shortcodes = [
+        $this->processor = new ShortcodeProcessor([
             'youtube' => \dirname(__DIR__, 2) . '/shortcodes/youtube.php',
-        ];
-        $this->processor = new ShortcodeProcessor($shortcodes);
+        ]);
     }
 
     public function testNoVideoId()
@@ -25,11 +24,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testBasicUsage()
     {
-        $content = $this->processor->processShortcodes('{youtube abc-123}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube kBddBRQ-xic}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/abc-123?start=0"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=0"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -44,11 +43,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testCustomDimensions()
     {
-        $content = $this->processor->processShortcodes('{youtube abc-123 width="800" height="600"}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube kBddBRQ-xic width="800" height="600"}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/abc-123?start=0"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=0"
         width="800"
         height="600"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -63,11 +62,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testStartTimeInSeconds()
     {
-        $content = $this->processor->processShortcodes('{youtube abc-123 start="90"}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube kBddBRQ-xic start="90"}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/abc-123?start=90"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=90"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -82,11 +81,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testStartTimeInMmSs()
     {
-        $content = $this->processor->processShortcodes('{youtube abc-123 start="1:30"}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube kBddBRQ-xic start="1:30"}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/abc-123?start=90"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=90"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -101,11 +100,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testAllAttributes()
     {
-        $content = $this->processor->processShortcodes('{youtube abc-123 width="1024" height="768" start="0:42" class="my-class" title="My Video" allow="autoplay"}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube kBddBRQ-xic width="1024" height="768" start="0:42" class="my-class" title="My Video" allow="autoplay"}', new \stdClass());
         $expected = '
 <div class="my-class">
     <iframe
-        src="https://www.youtube.com/embed/abc-123?start=42"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=42"
         width="1024"
         height="768"
         allow="autoplay"
@@ -120,11 +119,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testYoutubeUrlWatchV()
     {
-        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/watch?v=siiEuhfdhf}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/watch?v=kBddBRQ-xic}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=0"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -139,11 +138,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testYoutubeUrlYoutuBe()
     {
-        $content = $this->processor->processShortcodes('{youtube https://youtu.be/siiEuhfdhf}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube https://youtu.be/kBddBRQ-xic}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=0"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -158,11 +157,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testYoutubeUrlEmbed()
     {
-        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/embed/siiEuhfdhf}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/embed/kBddBRQ-xic}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=0"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -177,11 +176,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testYoutubeUrlWithOtherParams()
     {
-        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/watch?v=siiEuhfdhf&t=10s}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/watch?v=kBddBRQ-xic&t=10s}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=0"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -196,11 +195,11 @@ class ShortcodeYoutubeTest extends TestCase
 
     public function testYoutubeUrlWithoutScheme()
     {
-        $content = $this->processor->processShortcodes('{youtube www.youtube.com/watch?v=siiEuhfdhf}', new \stdClass());
+        $content = $this->processor->processShortcodes('{youtube www.youtube.com/watch?v=kBddBRQ-xic}', new \stdClass());
         $expected = '
 <div class="youtube-container">
     <iframe
-        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        src="https://www.youtube.com/embed/kBddBRQ-xic?start=0"
         width="560"
         height="315"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

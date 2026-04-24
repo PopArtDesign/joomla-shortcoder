@@ -128,6 +128,24 @@ In your shortcode, `$attributes` would look something like this:
 ]
 ```
 
+## Limitations
+
+*   **Nested Shortcodes**: Nesting a shortcode within another shortcode of the **same name** is not supported due to limitations in the regular expression-based parser. For example, the following structure will not work as expected:
+
+    ```
+    {my_shortcode}
+        {my_shortcode}...{/my_shortcode}
+    {/my_shortcode}
+    ```
+
+    However, nesting shortcodes with **different names** is fully supported:
+
+    ```
+    {one}
+        {two}...{/two}
+    {one}
+    ```
+
 ## Real-world Examples
 
 Here are some real-world examples of how you might use Shortcoder for common website elements.

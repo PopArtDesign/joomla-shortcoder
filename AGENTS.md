@@ -9,7 +9,7 @@ This project contains a Joomla 4+ content plugin that provides a lightweight sho
 *   **`shortcoder.xml`**: The Joomla extension manifest file. It defines the plugin's metadata, version, and file structure.
 *   **`services/provider.php`**: A Joomla DI (Dependency Injection) service provider. It discovers shortcode template files from the `JPATH_ROOT/shortcodes/` directory and registers the core `ShortcodeProcessor` and the `Shortcoder` plugin services.
 *   **`src/Extension/Shortcoder.php`**: The main plugin class (`CMSPlugin`). It subscribes to the `onContentPrepare` event for content articles and categories, and uses the `ShortcodeProcessor` to replace shortcodes in the text.
-*   **`src/ShortcodeProcessor.php`**: The core engine. It builds a regular expression from the discovered shortcode tags, parses shortcodes (including attributes and nested content), and renders the corresponding PHP template or executes a callable to generate the final output.
+*   **`src/ShortcodeProcessor.php`**: The core engine. It builds a regular expression from the discovered shortcode tags, parses shortcodes (including attributes and nested content), and renders the corresponding PHP template or executes a callable to generate the final output. **Note:** The regex-based parser does not support nesting a shortcode within another shortcode of the same name.
 
 ## Development
 

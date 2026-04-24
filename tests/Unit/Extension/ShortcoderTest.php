@@ -3,18 +3,12 @@
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Tests\Unit\Extension;
 
 use Joomla\CMS\Event\Content\ContentPrepareEvent;
-use Joomla\CMS\Log\Log;
 use Joomla\Event\Event;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-
-interface ErrorLoggerInterface
-{
-    public function error(string $message, array $context);
-}
 
 class ShortcoderTest extends TestCase
 {
@@ -25,7 +19,6 @@ class ShortcoderTest extends TestCase
     {
         $this->processor = $this->createMock(ShortcodeProcessor::class);
         $this->plugin = new Shortcoder($this->processor);
-        Log::reset();
     }
 
     public function testGetSubscribedEvents()
@@ -42,7 +35,7 @@ class ShortcoderTest extends TestCase
 
         $this->processor->expects($this->exactly($expectedCalls))
             ->method('processShortcodes')
-            ->willReturnCallback(fn($text) => $text . '_processed');
+            ->willReturnCallback(fn ($text) => $text . '_processed');
 
         $this->plugin->onContentPrepare($event);
 
@@ -111,23 +104,4 @@ class ShortcoderTest extends TestCase
         $this->plugin->onContentPrepare($event);
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testExceptionHandlingWithDebugOff()
-    {
-        $logMock = $this->createMock(ErrorLoggerInterface::class);
-        $logMock->expects($this->once())->method('error');
-        Log::$mock = $logMock;
-
-        $item = new stdClass();
-        $item->text = 'some {shortcode}';
-        $event = new Event('onContentPrepare', ['com_content.article', &$item]);
-
-        $this->processor->expects($this->once())
-            ->method('processShortcodes')
-            ->willThrowException(new ShortcodeProcessingException('Test error'));
-
-        $this->plugin->onContentPrepare($event);
-    }
 }

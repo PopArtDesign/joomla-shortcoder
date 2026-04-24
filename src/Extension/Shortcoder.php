@@ -61,7 +61,7 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
     {
         if ($event instanceof ContentPrepareEvent) {
             $context = $event->getContext();
-            $item = $event->getSubject();
+            $item = $event->getItem();
         } else {
             // Joomla 4.x
             $context = $event->getArgument(0);

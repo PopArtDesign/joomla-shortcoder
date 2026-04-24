@@ -48,13 +48,13 @@ if (!class_exists('Joomla\Event\Event')) {
 if (!class_exists('Joomla\CMS\Event\Content\ContentPrepareEvent')) {
     class Mock_ContentPrepareEvent implements Joomla\Event\EventInterface
     {
-        private $subject;
+        private $item;
         private string $context;
 
-        public function __construct(string $context, &$subject)
+        public function __construct(string $context, &$item)
         {
             $this->context = $context;
-            $this->subject = $subject;
+            $this->item = $item;
         }
 
         public function getContext(): string
@@ -62,9 +62,9 @@ if (!class_exists('Joomla\CMS\Event\Content\ContentPrepareEvent')) {
             return $this->context;
         }
 
-        public function getSubject()
+        public function getItem()
         {
-            return $this->subject;
+            return $this->item;
         }
     }
     class_alias('Mock_ContentPrepareEvent', 'Joomla\CMS\Event\Content\ContentPrepareEvent');

@@ -22,12 +22,9 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testSimpleShortcode(): void
     {
-        $shortcodes = [
-            'simple' => function (): string {
-                return 'Simple Shortcode';
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'simple' => fn () => 'Simple Shortcode',
+        ]);
 
         $text = 'This is a {simple} test.';
 
@@ -39,12 +36,9 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeReturningNonString(): void
     {
-        $shortcodes = [
-            'non_string' => function (): int {
-                return 123;
-            }
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'non_string' => fn () => 123,
+        ]);
 
         $text = 'The number is {non_string}.';
 
@@ -56,93 +50,90 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithAttributesDoubleQuotes(): void
     {
-        $shortcodes = [
-            'attributes' => function (array $attributes): string {
-                return 'Hello, ' . ($attributes['name'] ?? '');
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'hello' => fn (array $attributes) => sprintf(
+                'Hello, %s!',
+                ($attributes['name'] ?? null) ?: 'World'
+            ),
+        ]);
 
-        $text = 'Test {attributes name="Double Quoted"}!';
+        $text = 'Test {hello name="Double Quoted"} Test';
 
         $this->assertSame(
-            'Test Hello, Double Quoted!',
+            'Test Hello, Double Quoted! Test',
             $processor->processShortcodes($text, new \stdClass()),
-            'Double quotes for attribute values failed.'
         );
     }
 
     public function testShortcodeWithAttributesSingleQuotes(): void
     {
-        $shortcodes = [
-            'attributes' => function (array $attributes): string {
-                return 'Hello, ' . ($attributes['name'] ?? '');
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'hello' => fn (array $attributes) => sprintf(
+                'Hello, %s!',
+                ($attributes['name'] ?? null) ?: 'World'
+            ),
+        ]);
 
-        $text = "Test {attributes name='Single Quoted'}!";
+        $text = "Test {hello name='Single Quoted'} Test";
 
         $this->assertSame(
-            'Test Hello, Single Quoted!',
+            'Test Hello, Single Quoted! Test',
             $processor->processShortcodes($text, new \stdClass()),
-            'Single quotes for attribute values failed.'
         );
     }
 
     public function testShortcodeWithAttributesWithoutQuotes(): void
     {
-        $shortcodes = [
-            'attributes' => function (array $attributes): string {
-                return 'Hello, ' . ($attributes['name'] ?? '');
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'hello' => fn (array $attributes) => sprintf(
+                'Hello, %s!',
+                ($attributes['name'] ?? null) ?: 'World'
+            ),
+        ]);
 
-        $text = 'Test {attributes name=Unquoted}!';
+        $text = 'Test {hello name=Unquoted} Test';
 
         $this->assertSame(
-            'Test Hello, Unquoted!',
+            'Test Hello, Unquoted! Test',
             $processor->processShortcodes($text, new \stdClass()),
-            'Without quotes for attribute values failed.'
         );
     }
 
     public function testShortcodeWithEmptyAttributeValue(): void
     {
-        $shortcodes = [
-            'attributes' => function (array $attributes): string {
-                return 'Hello, ' . ($attributes['name'] ?? '');
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'hello' => fn (array $attributes) => sprintf(
+                'Hello, %s!',
+                ($attributes['name'] ?? null) ?: 'World'
+            ),
+        ]);
 
-        $textDouble = 'Test {attributes name=""}!';
-        $textSingle = 'Test {attributes name=\'\'}!';
+        $textDouble = 'Test {hello name=""} Test';
+        $textSingle = "Test {hello name=''} Test";
 
         $this->assertSame(
-            'Test Hello, !',
+            'Test Hello, World! Test',
             $processor->processShortcodes($textDouble, new \stdClass()),
-            'Empty double-quoted attribute value failed.'
         );
 
         $this->assertSame(
-            'Test Hello, !',
+            'Test Hello, World! Test',
             $processor->processShortcodes($textSingle, new \stdClass()),
-            'Empty single-quoted attribute value failed.'
         );
     }
 
     public function testShortcodeWithMultipleAttributes(): void
     {
-        $shortcodes = [
-            'multiple_attributes' => function (array $attributes): string {
-                return "FirstName: {$attributes['firstname']}, LastName: {$attributes['lastname']}, Age: {$attributes['age']}";
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'person' => fn (array $attributes) => sprintf(
+                'FirstName: %s, LastName: %s, Age: %d',
+                $attributes['firstname'],
+                $attributes['lastname'],
+                $attributes['age'],
+            ),
+        ]);
 
-        $text = 'Test {multiple_attributes firstname="John" lastname=\'Doe\' age=30}';
+        $text = 'Test {person firstname="John" lastname=\'Doe\' age=30}';
 
         $this->assertSame(
             'Test FirstName: John, LastName: Doe, Age: 30',
@@ -152,12 +143,10 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeUsesItemObject(): void
     {
-        $shortcodes = [
-            'item_aware' => function (array $attributes, string $content, object $item): string {
-                return 'Article Title: ' . $item->title;
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'item_aware' => fn (array $attributes, string $content, object $item) =>
+                'Article Title: ' . $item->title,
+        ]);
 
         $mockItem = new \stdClass();
         $mockItem->title = 'My Test Article';
@@ -172,29 +161,25 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithContent(): void
     {
-        $shortcodes = [
-            'content' => function (array $attributes, string $content): string {
-                return 'The content is: ' . $content;
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'uppercase' => fn (array $attributes, string $content) =>
+                strtoupper($content),
+        ]);
 
-        $text = 'This is a {content}wrapped content{/content} test.';
+        $text = 'This is a {uppercase}wrapped content{/uppercase} test.';
 
         $this->assertSame(
-            'This is a The content is: wrapped content test.',
+            'This is a WRAPPED CONTENT test.',
             $processor->processShortcodes($text, new \stdClass()),
         );
     }
 
     public function testShortcodeWithMultilineContent(): void
     {
-        $shortcodes = [
-            'content' => function (array $attributes, string $content): string {
-                return 'The content is: ' . $content;
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'content' => fn (array $attributes, string $content) =>
+                'The content is: ' . $content,
+        ]);
 
         $multilineContent = "This is line 1.\nThis is line 2.\nThis is line 3.";
         $text = 'A shortcode with multiline content: {content}' . $multilineContent . '{/content}';
@@ -207,12 +192,10 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithEmptyContent(): void
     {
-        $shortcodes = [
-            'content' => function (array $attributes, string $content): string {
-                return 'The content is: ' . $content;
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'content' => fn (array $attributes, string $content) =>
+                'The content is: ' . $content,
+        ]);
 
         $text = 'This is a {content}{/content} test.';
 
@@ -224,12 +207,9 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeTagsAreCaseSensitive(): void
     {
-        $shortcodes = [
-            'simple' => function (): string {
-                return 'This should not be rendered.';
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'simple' => fn () => 'This should not be rendered.',
+        ]);
 
         $text = 'This is a {SIMPLE} test.';
 
@@ -242,15 +222,11 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testNestedShortcodes(): void
     {
-        $shortcodes = [
-            'nested' => function (array $attributes, string $content): string {
-                return 'Nested start:(' . $content . ')Nested end';
-            },
-            'simple' => function (): string {
-                return 'Simple Shortcode';
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'nested' => fn (array $attributes, string $content) =>
+                'Nested start:(' . $content . ')Nested end',
+            'simple' => fn () => 'Simple Shortcode',
+        ]);
 
         $text = 'Level1 {nested}Level2 {simple} here{/nested}';
 
@@ -262,18 +238,16 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testSameNameNestedShortcodesAreNoLongerProcessed(): void
     {
-        $shortcodes = [
-            'nested' => function (array $attributes, string $content): string {
-                return 'Nested start:(' . ($attributes[0] ?? '') . $content . ($attributes[0] ?? '') . ')Nested end';
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'repeat' => fn (array $attributes, string $content) =>
+                str_repeat($content ?? '', (int) ($attributes[0] ?? 0)),
+        ]);
 
-        $text = '{nested 1}outer{nested 2}inner{/nested}outer{/nested}';
+        $text = '{repeat 2}outer {repeat 3}inner{/repeat} outer{/repeat}';
 
         // The inner shortcode will be treated as a self-closing shortcode, as its closing tag
         // is outside the content of the parent shortcode.
-        $expected = 'Nested start:(1outerNested start:(22)Nested endinner1)Nested endouter{/nested}';
+        $expected = 'outer innerouter inner outer{/repeat}';
 
         $this->assertSame(
             $expected,
@@ -283,29 +257,29 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithAttributesAndContent(): void
     {
-        $shortcodes = [
-            'complex' => function (array $attributes, string $content): string {
-                return "Complex shortcode with attr '{$attributes['attr']}' and content '{$content}'";
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'alert' => fn (array $attributes, string $content) => sprintf(
+                '<div class="alert alert-%s">%s</div>',
+                $attributes['type'] ?? 'info',
+                $content ?? '',
+            ),
+        ]);
 
-        $text = 'Start {complex attr="Value A"}Inner Content{/complex} End';
+        $text = 'Start {alert type="warning"}Warning!{/alert} End';
 
         $this->assertSame(
-            "Start Complex shortcode with attr 'Value A' and content 'Inner Content' End",
+            'Start <div class="alert alert-warning">Warning!</div> End',
             $processor->processShortcodes($text, new \stdClass())
         );
     }
 
     public function testShortcodeMaxDepthIsRespected(): void
     {
-        $shortcodes = [
-            'nested_a' => fn (array $attributes, string $content): string => "A($content)A",
-            'nested_b' => fn (array $attributes, string $content): string => "B($content)B",
-            'nested_c' => fn (array $attributes, string $content): string => "C($content)C",
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'nested_a' => fn (array $attributes, string $content) => "A($content)A",
+            'nested_b' => fn (array $attributes, string $content) => "B($content)B",
+            'nested_c' => fn (array $attributes, string $content) => "C($content)C",
+        ]);
 
         $text = '{nested_a}{nested_b}{nested_c}level3{/nested_c}{/nested_b}{/nested_a}';
 
@@ -336,15 +310,10 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testMultipleShortcodesInText(): void
     {
-        $shortcodes = [
-            'foo' => function (): string {
-                return 'FOO';
-            },
-            'bar' => function (): string {
-                return 'BAR';
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'foo' => fn () => 'FOO',
+            'bar' => fn () => 'BAR',
+        ]);
 
         $text = 'This is {foo}. This is {bar}. This is {foo} again.';
 
@@ -356,10 +325,9 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testFileBasedShortcode(): void
     {
-        $shortcodes = [
+        $processor = new ShortcodeProcessor([
             'file_complex' => dirname(__DIR__) . '/fixtures/shortcodes/complex.php',
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        ]);
 
         $mockItem = new \stdClass();
         $mockItem->title = 'My Item';
@@ -377,78 +345,66 @@ class ShortcodeProcessorTest extends TestCase
      */
     public function testShortcodeExecutionThrowsExceptionAndIsHandledGracefully(): void
     {
-        $faultyShortcodeTag = 'faulty_shortcode';
-        $errorMessage       = 'Something went wrong inside the shortcode!';
-
-        // Define a callable that deliberately throws an exception
-        $faultyHandler = function () use ($errorMessage) {
-            throw new \RuntimeException($errorMessage);
-        };
-
-        $shortcodes = [
-            $faultyShortcodeTag => $faultyHandler,
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'faulty' => fn () =>
+                throw new \RuntimeException('Something went wrong inside the shortcode!'),
+        ]);
 
         $text = 'Content with a {faulty_shortcode} that will fail.';
-        $item = new \stdClass(); // Mock item
 
         $this->expectException(ShortcodeProcessingException::class);
-        $this->expectExceptionMessageMatches(
-            sprintf('/Shortcode "%s" failed to execute\./', $faultyShortcodeTag)
-        );
+        $this->expectExceptionMessage('Shortcode "faulty" failed to execute.');
 
         try {
-            $processor->processShortcodes($text, $item);
+            $processor->processShortcodes($text, new \stdClass());
         } catch (ShortcodeProcessingException $e) {
             $this->assertInstanceOf(\RuntimeException::class, $e->getPrevious());
-            $this->assertSame($errorMessage, $e->getPrevious()->getMessage());
-            throw $e; // Re-throw to satisfy expectException
+            $this->assertSame(
+                'Something went wrong inside the shortcode!',
+                $e->getPrevious()->getMessage(),
+            );
+            throw $e;
         }
     }
 
     public function testShortcodeWithSinglePositionalAttribute(): void
     {
-        $shortcodes = [
-            'positional' => function (array $attributes): string {
-                return 'Value: ' . ($attributes[0] ?? '');
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'email' => fn (array $attributes) => sprintf(
+                '<a href="mailto:%1$s">%1$s</a>',
+                $attributes[0] ?? '',
+            ),
+        ]);
 
-        $text = "Test {positional 'value1'}!";
+        $text = 'My email: {email test@localhost}!';
 
         $this->assertSame(
-            'Test Value: value1!',
+            'My email: <a href="mailto:test@localhost">test@localhost</a>!',
             $processor->processShortcodes($text, new \stdClass())
         );
     }
 
     public function testShortcodeWithMultiplePositionalAttributes(): void
     {
-        $shortcodes = [
-            'positional' => function (array $attributes): string {
-                return "Value1: {$attributes[0]}, Value2: {$attributes[1]}";
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'sum' => fn (array $attributes) =>
+                ((int) $attributes[0] ?? 0) + ((int) $attributes[1] ?? 0) + ((int) $attributes[2] ?? 0),
+        ]);
 
-        $text = "Test {positional 'value1' 'value2'}!";
+        $text = 'Sum 1 + 2 + 3 is {sum 1 \'2\' "3"}!';
 
         $this->assertSame(
-            'Test Value1: value1, Value2: value2!',
+            'Sum 1 + 2 + 3 is 6!',
             $processor->processShortcodes($text, new \stdClass())
         );
     }
 
     public function testShortcodeWithMixedNamedAndPositionalAttributes(): void
     {
-        $shortcodes = [
-            'mixed' => function (array $attributes): string {
-                return "Name: {$attributes['name']}, Value1: {$attributes[0]}, Value2: {$attributes[1]}";
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'mixed' => fn (array $attributes) =>
+                "Name: {$attributes['name']}, Value1: {$attributes[0]}, Value2: {$attributes[1]}",
+        ]);
 
         $text = "Test {mixed name='test' 'value1' 'value2'}!";
 
@@ -460,12 +416,10 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithMixedPositionalAndNamedAttributes(): void
     {
-        $shortcodes = [
-            'mixed' => function (array $attributes): string {
-                return "Value1: {$attributes[0]}, Name: {$attributes['name']}, Value2: {$attributes[1]}";
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'mixed' => fn (array $attributes) =>
+                "Value1: {$attributes[0]}, Name: {$attributes['name']}, Value2: {$attributes[1]}",
+        ]);
 
         $text = "Test {mixed 'value1' name='test' 'value2'}!";
 
@@ -477,12 +431,10 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testShortcodeWithPositionalAttributesInSpecialUnderscoreVar(): void
     {
-        $shortcodes = [
-            'mixed' => function (array $attributes): string {
-                return "Name: {$attributes['name']}, Positional: " . implode(', ', $attributes['_']);
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'mixed' => fn (array $attributes) =>
+                "Name: {$attributes['name']}, Positional: " . implode(', ', $attributes['_']),
+        ]);
 
         $text = "Test {mixed 'value1' name='test' 'value2'}!";
 
@@ -494,17 +446,15 @@ class ShortcodeProcessorTest extends TestCase
 
     public function testAdjacentShortcodesWithSameName(): void
     {
-        $shortcodes = [
-            'repeat' => function (array $attributes, string $content): string {
-                return str_repeat($content, (int) ($attributes[0] ?? 1));
-            },
-        ];
-        $processor = new ShortcodeProcessor($shortcodes);
+        $processor = new ShortcodeProcessor([
+            'repeat' => fn (array $attributes, string $content) =>
+                str_repeat($content, (int) ($attributes[0] ?? 1)),
+        ]);
 
-        $text = '{repeat 2}Hello{/repeat}{repeat 3}World!{/repeat}';
+        $text = '{repeat 2}Hello{/repeat} {repeat 3}World!{/repeat}';
 
         $this->assertSame(
-            'HelloHelloWorld!World!World!',
+            'HelloHello World!World!World!',
             $processor->processShortcodes($text, new \stdClass())
         );
     }

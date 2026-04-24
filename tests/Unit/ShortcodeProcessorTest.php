@@ -373,7 +373,6 @@ class ShortcodeProcessorTest extends TestCase
     }
 
     /**
-     * @test
      * @covers \PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor::executeShortcode
      */
     public function testShortcodeExecutionThrowsExceptionAndIsHandledGracefully(): void

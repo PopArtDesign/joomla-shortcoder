@@ -24,6 +24,12 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
 {
     private ShortcodeProcessor $processor;
 
+    private array $allowedContexts = [
+        'com_content.article',
+        'com_content.category',
+        'com_content.featured',
+    ];
+
     /**
      * Shortcoder constructor.
      *
@@ -63,7 +69,7 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
             $item = $event->getArgument(1);
         }
 
-        if (!in_array($context, ['com_content.article', 'com_content.category'], true)) {
+        if (!\in_array($context, $this->allowedContexts, true)) {
             return;
         }
 

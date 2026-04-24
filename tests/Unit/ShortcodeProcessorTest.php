@@ -240,7 +240,7 @@ class ShortcodeProcessorTest extends TestCase
     {
         $processor = new ShortcodeProcessor([
             'repeat' => fn (array $attributes, string $content) =>
-                str_repeat($content ?? '', (int) ($attributes[0] ?? 0)),
+                str_repeat($content ?? '', (int) ($attributes[0] ?? 1)),
         ]);
 
         $text = '{repeat 2}outer {repeat 3}inner{/repeat} outer{/repeat}';
@@ -251,6 +251,21 @@ class ShortcodeProcessorTest extends TestCase
 
         $this->assertSame(
             $expected,
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
+    public function testAdjacentShortcodesWithSameName(): void
+    {
+        $processor = new ShortcodeProcessor([
+            'repeat' => fn (array $attributes, string $content) =>
+                str_repeat($content ?? '', (int) ($attributes[0] ?? 1)),
+        ]);
+
+        $text = '{repeat 2}Hello{/repeat} {repeat 3}World!{/repeat}';
+
+        $this->assertSame(
+            'HelloHello World!World!World!',
             $processor->processShortcodes($text, new \stdClass())
         );
     }
@@ -440,21 +455,6 @@ class ShortcodeProcessorTest extends TestCase
 
         $this->assertSame(
             'Test Name: test, Positional: value1, value2!',
-            $processor->processShortcodes($text, new \stdClass())
-        );
-    }
-
-    public function testAdjacentShortcodesWithSameName(): void
-    {
-        $processor = new ShortcodeProcessor([
-            'repeat' => fn (array $attributes, string $content) =>
-                str_repeat($content, (int) ($attributes[0] ?? 1)),
-        ]);
-
-        $text = '{repeat 2}Hello{/repeat} {repeat 3}World!{/repeat}';
-
-        $this->assertSame(
-            'HelloHello World!World!World!',
             $processor->processShortcodes($text, new \stdClass())
         );
     }

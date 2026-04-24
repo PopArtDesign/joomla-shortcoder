@@ -4,29 +4,26 @@ namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Event;
 
 use Joomla\Event\Event;
 
+\defined('_JEXEC') or die;
+
 /**
  * Event for collecting shortcode paths.
  *
  * This event is dispatched to allow other plugins to add their custom shortcode paths.
  *
- * @since  1.0.0
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
  */
 class ShortcoderPathsEvent extends Event
 {
     /**
-     * @var    string[]
-     * @since  1.0.0
+     * @var string[]
      */
     protected array $paths = [];
-
-
 
     /**
      * Get the paths.
      *
-     * @return  string[]
-     *
-     * @since  1.0.0
+     * @return string[]
      */
     public function getPaths(): array
     {
@@ -36,11 +33,9 @@ class ShortcoderPathsEvent extends Event
     /**
      * Add a path.
      *
-     * @param  string  $path  Path to add
+     * @param string $path Path to add
      *
      * @return  void
-     *
-     * @since  1.0.0
      */
     public function addPath(string $path): void
     {

@@ -116,8 +116,12 @@ class ShortcodeProcessor
             if (!empty($match[1])) { // Named attribute
                 $attributes[$match[1]] = $value;
             } else { // Positional attribute
-                $attributes[count($positional)] = $value;
-                $positional[] = $value;
+                if (preg_match('/^([a-zA-Z0-9_\-]+)=$/', $value, $nameMatch)) {
+                    $attributes[$nameMatch[1]] = '';
+                } else {
+                    $attributes[count($positional)] = $value;
+                    $positional[] = $value;
+                }
             }
         }
 

@@ -122,6 +122,28 @@ class ShortcodeProcessorTest extends TestCase
         );
     }
 
+    public function testShortcodeWithEmptyUnquotedAttribute(): void
+    {
+        $processor = new ShortcodeProcessor([
+            'hello' => function (array $attributes) {
+                if (!array_key_exists('name', $attributes)) {
+                    return 'name attribute not found';
+                }
+                if ($attributes['name'] === '') {
+                    return 'name attribute is an empty string';
+                }
+                return 'name attribute is: ' . $attributes['name'];
+            },
+        ]);
+
+        $text = 'Test {hello name=} Test';
+
+        $this->assertSame(
+            'Test name attribute is an empty string Test',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
     public function testShortcodeWithMultipleAttributes(): void
     {
         $processor = new ShortcodeProcessor([

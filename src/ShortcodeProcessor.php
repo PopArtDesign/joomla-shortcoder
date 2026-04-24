@@ -97,15 +97,16 @@ class ShortcodeProcessor
      */
     private function parseAttributes(string $attrString): array
     {
-        $attributes = [];
         if ($attrString === '') {
-            return $attributes;
+            return ['_' => []];
         }
+
+        $attributes = [];
+        $positional = [];
 
         $pattern = '/(?:([a-zA-Z0-9_\-]+)\s*=\s*)?((?:"[^"]*")|(?:\'[^\']*\')|(?:[^\s"\'<>]+))/';
         \preg_match_all($pattern, $attrString, $matches, \PREG_SET_ORDER);
 
-        $positional = [];
         foreach ($matches as $match) {
             $value = $match[2];
             // Trim quotes
@@ -125,9 +126,7 @@ class ShortcodeProcessor
             }
         }
 
-        if (!empty($positional)) {
-            $attributes['_'] = $positional;
-        }
+        $attributes['_'] = $positional;
 
         return $attributes;
     }

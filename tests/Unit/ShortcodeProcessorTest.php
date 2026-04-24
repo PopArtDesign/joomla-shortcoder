@@ -469,14 +469,34 @@ class ShortcodeProcessorTest extends TestCase
     public function testShortcodeWithPositionalAttributesInSpecialUnderscoreVar(): void
     {
         $processor = new ShortcodeProcessor([
-            'mixed' => fn (array $attributes) =>
-                "Name: {$attributes['name']}, Positional: " . implode(', ', $attributes['_']),
+            'sum' => fn (array $attributes) => array_sum($attributes['_']),
         ]);
 
-        $text = "Test {mixed 'value1' name='test' 'value2'}!";
+        $text = "Test {sum 1 2 3 4 5}!";
 
         $this->assertSame(
-            'Test Name: test, Positional: value1, value2!',
+            'Test 15!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
+    public function testShortcodeWithNoPositionalAttributesStillHasEmptyUnderscoreVar(): void
+    {
+        $processor = new ShortcodeProcessor([
+            'sum' => fn (array $attributes) => array_sum($attributes['_']),
+        ]);
+
+        $text = 'Test {sum name="named_only"}!';
+
+        $this->assertSame(
+            'Test 0!',
+            $processor->processShortcodes($text, new \stdClass())
+        );
+
+        $text = 'Test {sum}!'; // No attributes at all
+
+        $this->assertSame(
+            'Test 0!',
             $processor->processShortcodes($text, new \stdClass())
         );
     }

@@ -7,7 +7,7 @@ This project contains a Joomla 4+ content plugin that provides a lightweight sho
 ## Architecture
 
 *   **`shortcoder.xml`**: The Joomla extension manifest file. It defines the plugin's metadata, version, and file structure.
-*   **`shortcodes/`**: This directory contains built-in shortcodes like `youtube.php` and `shortcodes.php` (for callable shortcodes).
+*   **`shortcodes/`**: This directory is no longer used by the plugin to load built-in shortcodes. Other plugins can register their own shortcode paths via the `onShortcoderRegisterPaths` event, or use the global `JPATH_ROOT/shortcodes` directory.
 *   **`services/provider.php`**: A Joomla DI (Dependency Injection) service provider. It discovers shortcode template files from the `JPATH_ROOT/shortcodes/` directory and registers the core `ShortcodeProcessor` and the `Shortcoder` plugin services.
 *   **`src/Extension/Shortcoder.php`**: The main plugin class (`CMSPlugin`). It subscribes to the `onContentPrepare` event for content articles and categories, and uses the `ShortcodeProcessor` to replace shortcodes in the text.
 *   **`src/ShortcodeProcessor.php`**: The core engine. It builds a regular expression from the discovered shortcode tags, parses shortcodes (including attributes and nested content), and renders the corresponding PHP template or executes a callable to generate the final output. **Note:** The regex-based parser does not support nesting a shortcode within another shortcode of the same name.
@@ -43,3 +43,32 @@ To run the tests, execute the following command from the project root:
     *   `$content`: A string containing the content nested between the opening and closing shortcode tags (e.g., `...content...` in `{tag}content{/tag}`).
     *   `$item`: The Joomla content item object (e.g., the article object) being processed.
 *   **Installation**: The plugin uses `method="upgrade"` in its manifest, allowing it to be updated in-place via Joomla's extension installer.
+
+### Extending with Custom Shortcodes
+
+Other plugins can add their own shortcode directories by subscribing to the `onShortcoderRegisterPaths` event.
+
+**Example of a subscriber plugin:**
+
+```php
+<?php
+
+use Joomla\Event\Event;
+use Joomla\Event\SubscriberInterface;
+use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Event\ShortcoderPathsEvent;
+
+class MyShortcodeProviderPlugin implements SubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onShortcoderRegisterPaths' => 'addCustomShortcodePath',
+        ];
+    }
+
+    public function addCustomShortcodePath(ShortcoderPathsEvent $event): void
+    {
+        $event->addPath('/path/to/my/shortcodes');
+    }
+}
+```

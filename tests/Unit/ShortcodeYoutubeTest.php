@@ -117,4 +117,99 @@ class ShortcodeYoutubeTest extends TestCase
 </div>';
         $this->assertEquals(trim($expected), trim($content));
     }
+
+    public function testYoutubeUrlWatchV()
+    {
+        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/watch?v=siiEuhfdhf}', new \stdClass());
+        $expected = '
+<div class="youtube-container">
+    <iframe
+        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        width="560"
+        height="315"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        title="YouTube video player"
+        referrerpolicy="strict-origin-when-cross-origin"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>';
+        $this->assertEquals(trim($expected), trim($content));
+    }
+
+    public function testYoutubeUrlYoutuBe()
+    {
+        $content = $this->processor->processShortcodes('{youtube https://youtu.be/siiEuhfdhf}', new \stdClass());
+        $expected = '
+<div class="youtube-container">
+    <iframe
+        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        width="560"
+        height="315"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        title="YouTube video player"
+        referrerpolicy="strict-origin-when-cross-origin"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>';
+        $this->assertEquals(trim($expected), trim($content));
+    }
+
+    public function testYoutubeUrlEmbed()
+    {
+        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/embed/siiEuhfdhf}', new \stdClass());
+        $expected = '
+<div class="youtube-container">
+    <iframe
+        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        width="560"
+        height="315"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        title="YouTube video player"
+        referrerpolicy="strict-origin-when-cross-origin"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>';
+        $this->assertEquals(trim($expected), trim($content));
+    }
+
+    public function testYoutubeUrlWithOtherParams()
+    {
+        $content = $this->processor->processShortcodes('{youtube https://www.youtube.com/watch?v=siiEuhfdhf&t=10s}', new \stdClass());
+        $expected = '
+<div class="youtube-container">
+    <iframe
+        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        width="560"
+        height="315"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        title="YouTube video player"
+        referrerpolicy="strict-origin-when-cross-origin"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>';
+        $this->assertEquals(trim($expected), trim($content));
+    }
+
+    public function testYoutubeUrlWithoutScheme()
+    {
+        $content = $this->processor->processShortcodes('{youtube www.youtube.com/watch?v=siiEuhfdhf}', new \stdClass());
+        $expected = '
+<div class="youtube-container">
+    <iframe
+        src="https://www.youtube.com/embed/siiEuhfdhf?start=0"
+        width="560"
+        height="315"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        title="YouTube video player"
+        referrerpolicy="strict-origin-when-cross-origin"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>';
+        $this->assertEquals(trim($expected), trim($content));
+    }
 }

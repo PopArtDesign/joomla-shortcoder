@@ -3,9 +3,42 @@
 \defined('_JEXEC') or die;
 
 $videoId = $attributes[0] ?? '';
+
+// Check if the input is a URL and parse it
+if (strpos($videoId, 'youtu') !== false) {
+    $url = $videoId;
+    // Add scheme if missing for parse_url to work correctly
+    if (strpos($url, 'http') !== 0) {
+        $url = 'https://' . $url;
+    }
+
+    $urlParts = parse_url($url);
+
+    if ($urlParts && isset($urlParts['host'])) {
+        $host = strtolower($urlParts['host']);
+        $path = $urlParts['path'] ?? '';
+
+        if (in_array($host, ['youtube.com', 'www.youtube.com', 'm.youtube.com'])) {
+            if (isset($urlParts['query'])) {
+                parse_str($urlParts['query'], $query);
+                if (isset($query['v'])) {
+                    $videoId = $query['v'];
+                }
+            } elseif (strpos($path, '/embed/') === 0) {
+                $videoId = substr($path, strlen('/embed/'));
+            }
+        } elseif ($host === 'youtu.be') {
+            $videoId = ltrim($path, '/');
+        }
+    }
+}
+
 if (!$videoId) {
     return '';
 }
+
+// Clean up video ID from any potential leftover query parameters from short URLs
+$videoId = strtok($videoId, '?');
 
 $width   = $attributes['width'] ?? '560';
 $height  = $attributes['height'] ?? '315';
@@ -21,7 +54,6 @@ if (count($parts) == 2) {
 
 $src = sprintf('https://www.youtube.com/embed/%s?start=%d', htmlspecialchars($videoId), (int) $start);
 ?>
-
 <div class="<?php echo htmlspecialchars($class); ?>">
     <iframe
         src="<?php echo $src; ?>"
@@ -34,3 +66,4 @@ $src = sprintf('https://www.youtube.com/embed/%s?start=%d', htmlspecialchars($vi
         allowfullscreen>
     </iframe>
 </div>
+

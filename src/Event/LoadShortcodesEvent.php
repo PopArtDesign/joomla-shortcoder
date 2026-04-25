@@ -2,8 +2,9 @@
 
 namespace JoomlaShortcoder\Plugin\Content\Shortcoder\Event;
 
-use Joomla\Event\Event;
 use JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeLoadingException;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
+use Joomla\Event\Event;
 
 \defined('_JEXEC') or die;
 
@@ -53,16 +54,16 @@ class LoadShortcodesEvent extends Event
     /**
      * Adds a callable shortcode.
      *
-     * @param string $tag      The shortcode tag name.
+     * @param string   $tag      The shortcode tag name.
      * @param callable $callable The callable to execute for this shortcode.
      *
      * @return void
      *
-     * @throws \InvalidArgumentException If the tag name is invalid.
+     * @throws ShortcodeLoadingException If the tag name is invalid.
      */
     public function addShortcode(string $tag, callable $callable): void
     {
-        if (!preg_match('/^[a-zA-Z0-9_\-]+$/', $tag)) {
+        if (!ShortcodeProcessor::isValidTagName($tag)) {
             throw new ShortcodeLoadingException(\sprintf('Shortcode tag "%s" is not valid.', $tag));
         }
 

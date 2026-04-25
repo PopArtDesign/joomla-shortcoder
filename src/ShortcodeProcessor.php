@@ -22,6 +22,20 @@ class ShortcodeProcessor
     private string $regexPattern = '';
 
     /**
+     * Validates if a given string is a valid shortcode tag name.
+     *
+     * A valid tag name consists of alphanumeric characters, underscores, and hyphens.
+     *
+     * @param string $tag The string to validate as a shortcode tag.
+     *
+     * @return bool True if the tag is valid, false otherwise.
+     */
+    public static function isValidTagName(string $tag): bool
+    {
+        return \preg_match('/^[a-zA-Z0-9_\-]+$/', $tag) === 1;
+    }
+
+    /**
      * ShortcodeProcessor constructor.
      *
      * @param array $shortcodes An associative array where keys are shortcode tags

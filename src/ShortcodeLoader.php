@@ -87,7 +87,7 @@ class ShortcodeLoader
 
         foreach (\glob($path . '/*.php', \GLOB_NOSORT | \GLOB_ERR) as $filePath) {
             $basename = \basename($filePath, '.php');
-            if ($basename === 'shortcodes' || !$this->isValidTagName($basename)) {
+            if ($basename === 'shortcodes' || !ShortcodeProcessor::isValidTagName($basename)) {
                 continue;
             }
 
@@ -126,7 +126,7 @@ class ShortcodeLoader
         }
 
         foreach ($callableShortcodes as $tag => $handler) {
-            if (!\is_string($tag) || !$this->isValidTagName($tag)) {
+            if (!\is_string($tag) || !ShortcodeProcessor::isValidTagName($tag)) {
                 continue;
             }
 
@@ -136,19 +136,5 @@ class ShortcodeLoader
         }
 
         return $shortcodes;
-    }
-
-    /**
-     * Validates if a given string is a valid shortcode tag name.
-     *
-     * A valid tag name consists of alphanumeric characters, underscores, and hyphens.
-     *
-     * @param string $tag The string to validate as a shortcode tag.
-     *
-     * @return bool True if the tag is valid, false otherwise.
-     */
-    private function isValidTagName(string $tag): bool
-    {
-        return \preg_match('/^[a-zA-Z0-9_\-]+$/', $tag) === 1;
     }
 }

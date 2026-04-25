@@ -24,25 +24,32 @@ class ShortcodeLoader
     private array $paths;
 
     /**
+     * @var callable[]
+     */
+    private array $shortcodes;
+
+    /**
      * ShortcodeLoader constructor.
      *
-     * @param array $paths The directories to scan for shortcode files.
+     * @param array $paths    The directories to scan for shortcode files.
+     * @param array $shortcodes Pre-registered callable shortcodes.
      */
-    public function __construct(array $paths)
+    public function __construct(array $paths, array $shortcodes = [])
     {
         $this->paths = $paths;
+        $this->shortcodes = $shortcodes;
     }
 
     /**
      * Loads shortcode files from the configured directories.
      *
-     * @return array An associative array of shortcode tags and their file paths.
+     * @return array An associative array of shortcode tags and their file paths or callables.
      *
      * @throws ShortcodeLoadingException If a directory is not readable.
      */
     public function loadShortcodes(): array
     {
-        $shortcodes = [];
+        $shortcodes = $this->shortcodes;
 
         foreach ($this->paths as $path) {
             $path = \realpath($path);

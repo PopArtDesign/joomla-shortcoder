@@ -40,7 +40,7 @@ return new class () implements ServiceProviderInterface {
                     $event->addPath(\JPATH_ROOT . '/shortcodes');
                 }
 
-                return new ShortcodeLoader($event->getPaths());
+                return new ShortcodeLoader($event->getPaths(), $event->getShortcodes());
             }
         );
 

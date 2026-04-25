@@ -20,7 +20,7 @@ class ShortcodeLoaderTest extends TestCase
 
     public function testLoadShortcodesReturnsFiles(): void
     {
-        $loader = new ShortcodeLoader([$this->fixturesDir]);
+        $loader = new ShortcodeLoader([$this->fixturesDir], []);
         $result = $loader->loadShortcodes();
 
         $this->assertArrayHasKey('simple', $result);
@@ -33,13 +33,13 @@ class ShortcodeLoaderTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $loader = new ShortcodeLoader([$this->fixturesDir . '/non_existent']);
+        $loader = new ShortcodeLoader([$this->fixturesDir . '/non_existent'], []);
         $loader->loadShortcodes();
     }
 
     public function testLoadsCallableAndFileShortcodes(): void
     {
-        $loader = new ShortcodeLoader([$this->fixturesWithCallablesDir]);
+        $loader = new ShortcodeLoader([$this->fixturesWithCallablesDir], []);
         $result = $loader->loadShortcodes();
 
         // Assert file-based shortcode is loaded
@@ -58,7 +58,7 @@ class ShortcodeLoaderTest extends TestCase
 
     public function testCallableShortcodeOverwritesFileShortcode(): void
     {
-        $loader = new ShortcodeLoader([$this->fixturesWithCallablesDir]);
+        $loader = new ShortcodeLoader([$this->fixturesWithCallablesDir], []);
         $result = $loader->loadShortcodes();
 
         $this->assertArrayHasKey('overwrite_me', $result);
@@ -69,7 +69,7 @@ class ShortcodeLoaderTest extends TestCase
 
     public function testIgnoresInvalidCallableDefinitions(): void
     {
-        $loader = new ShortcodeLoader([$this->fixturesWithInvalidCallablesDir]);
+        $loader = new ShortcodeLoader([$this->fixturesWithInvalidCallablesDir], []);
         $result = $loader->loadShortcodes();
 
         // Invalid tag name should not be loaded
@@ -78,5 +78,45 @@ class ShortcodeLoaderTest extends TestCase
         // Non-callable handler should not be loaded
         $this->assertArrayNotHasKey('valid-tag', $result);
         $this->assertArrayNotHasKey('another_invalid', $result);
+    }
+
+    public function testLoadsShortcodesFromConstructor(): void
+    {
+        $callable = static fn () => 'constructor_test';
+        $loader = new ShortcodeLoader([], ['constructor_tag' => $callable]);
+        $result = $loader->loadShortcodes();
+
+        $this->assertArrayHasKey('constructor_tag', $result);
+        $this->assertSame($callable, $result['constructor_tag']);
+    }
+
+    public function testFileShortcodeOverwritesConstructorShortcode(): void
+    {
+        $constructorCallable = static fn () => 'constructor_test';
+        $loader = new ShortcodeLoader(
+            [$this->fixturesDir],
+            ['simple' => $constructorCallable] // 'simple' is also a file shortcode in fixturesDir
+        );
+        $result = $loader->loadShortcodes();
+
+        $this->assertArrayHasKey('simple', $result);
+        // Expect the file-based shortcode to overwrite the constructor-provided one
+        $this->assertIsNotCallable($result['simple']);
+        $this->assertStringEndsWith('simple.php', $result['simple']);
+    }
+
+    public function testCallableFileShortcodeOverwritesConstructorShortcode(): void
+    {
+        $constructorCallable = static fn () => 'constructor_test';
+        $loader = new ShortcodeLoader(
+            [$this->fixturesWithCallablesDir],
+            ['overwrite_me' => $constructorCallable] // 'overwrite_me' is also a callable shortcode in shortcodes.php
+        );
+        $result = $loader->loadShortcodes();
+
+        $this->assertArrayHasKey('overwrite_me', $result);
+        // Expect the callable from shortcodes.php to overwrite the constructor-provided one
+        $this->assertIsCallable($result['overwrite_me']);
+        $this->assertNotSame($constructorCallable, $result['overwrite_me']);
     }
 }

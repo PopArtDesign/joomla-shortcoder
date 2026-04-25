@@ -45,7 +45,7 @@ To run the tests, execute the following command from the project root:
 
 ### Extending with Custom Shortcodes
 
-Other plugins can add their own shortcode directories by subscribing to the `onShortcoderLoadShortcodes` event.
+Other plugins can add their own shortcode directories or directly register callable shortcodes by subscribing to the `onShortcoderLoadShortcodes` event.
 
 **Example of a subscriber plugin:**
 
@@ -67,7 +67,18 @@ class MyShortcodeProviderPlugin implements SubscriberInterface
 
     public function addShortcodes(LoadShortcodesEvent $event): void
     {
+        // Add a directory containing shortcode files
         $event->addPath('/path/to/my/shortcodes');
+
+        // Directly register a callable shortcode
+        $event->addShortcode('my_custom_shortcode', function ($attributes, $content, $item) {
+            return 'This is my custom shortcode output: ' . $content;
+        });
+
+        // Register another callable shortcode that overrides a file-based one
+        $event->addShortcode('simple', function () {
+            return 'Overridden simple shortcode!';
+        });
     }
 }
 ```

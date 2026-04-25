@@ -1,6 +1,6 @@
 <?php
 
-namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception;
+namespace JoomlaShortcoder\Plugin\Content\Shortcoder\Exception;
 
 \defined('_JEXEC') or die;
 

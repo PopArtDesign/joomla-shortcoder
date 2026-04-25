@@ -1,6 +1,6 @@
 <?php
 
-namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Event;
+namespace JoomlaShortcoder\Plugin\Content\Shortcoder\Event;
 
 use Joomla\Event\Event;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder;
+namespace JoomlaShortcoder\Plugin\Content\Shortcoder;
 
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeLoadingException;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeLoadingException;
 
 \defined('_JEXEC') or die;
 

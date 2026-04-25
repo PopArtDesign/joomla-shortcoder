@@ -1,14 +1,14 @@
 <?php
 
-namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Tests\Unit\Extension;
+namespace JoomlaShortcoder\Plugin\Content\Shortcoder\Tests\Unit\Extension;
 
 use Joomla\CMS\Event\Content\ContentPrepareEvent;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

@@ -6,10 +6,10 @@ use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Event\ShortcoderPathsEvent;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeLoader;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Event\ShortcoderPathsEvent;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeLoader;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 use Joomla\Event\DispatcherInterface;
 
 return new class () implements ServiceProviderInterface {

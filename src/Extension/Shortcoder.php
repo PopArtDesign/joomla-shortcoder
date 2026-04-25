@@ -1,6 +1,6 @@
 <?php
 
-namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension;
+namespace JoomlaShortcoder\Plugin\Content\Shortcoder\Extension;
 
 use Joomla\CMS\Event\Content\ContentPrepareEvent;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -8,7 +8,7 @@ use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 \defined('_JEXEC') or die;
 

@@ -55,7 +55,7 @@ Other plugins can add their own shortcode directories by subscribing to the `onS
 
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Event\ShortcoderPathsEvent;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Event\ShortcoderPathsEvent;
 
 class MyShortcodeProviderPlugin implements SubscriberInterface
 {

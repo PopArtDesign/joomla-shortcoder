@@ -8,7 +8,7 @@
     <version>0.0.2</version>
     <copyright>popartdesign.ru</copyright>
     <license>MIT</license>
-    <namespace path="src">PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder</namespace>
+    <namespace path="src">JoomlaShortcoder\Plugin\Content\Shortcoder</namespace>
     <description>A lightweight, template-based shortcode engine</description>
     <files>
         <folder plugin="shortcoder">services</folder>

@@ -1,10 +1,10 @@
 <?php
 
-namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Test\Unit;
+namespace JoomlaShortcoder\Plugin\Content\Shortcoder\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 class ShortcodeProcessorTest extends TestCase
 {
@@ -378,7 +378,7 @@ class ShortcodeProcessorTest extends TestCase
     }
 
     /**
-     * @covers \PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor::executeShortcode
+     * @covers \JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor::executeShortcode
      */
     public function testShortcodeExecutionThrowsExceptionAndIsHandledGracefully(): void
     {

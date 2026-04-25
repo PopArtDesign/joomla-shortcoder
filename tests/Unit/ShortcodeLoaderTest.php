@@ -1,8 +1,8 @@
 <?php
 
-namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Test\Unit;
+namespace JoomlaShortcoder\Plugin\Content\Shortcoder\Test\Unit;
 
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeLoader;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeLoader;
 use PHPUnit\Framework\TestCase;
 
 class ShortcodeLoaderTest extends TestCase

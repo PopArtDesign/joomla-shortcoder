@@ -74,11 +74,20 @@ class MyShortcodeProviderPlugin implements SubscriberInterface
         $event->addShortcode('my_custom_shortcode', function ($attributes, $content, $item) {
             return 'This is my custom shortcode output: ' . $content;
         });
-
-        // Register another callable shortcode that overrides a file-based one
-        $event->addShortcode('simple', function () {
-            return 'Overridden simple shortcode!';
-        });
     }
 }
+```
+
+### Code Style
+
+The project uses `php-cs-fixer` to enforce a consistent code style. The code style can be checked using the following command:
+
+```bash
+composer cs
+```
+
+The code style can be fixed using the following command:
+
+```bash
+composer cs-fix
 ```

@@ -57,9 +57,7 @@ class ShortcodeProcessor
      */
     public function processShortcodes(string $text, object $item, int $maxDepth = 10): string
     {
-        $this->buildRegexPattern();
-
-        if ($this->regexPattern === '' || $maxDepth <= 0) {
+        if (!$this->buildRegexPattern() || $maxDepth <= 0) {
             return $text;
         }
 
@@ -79,17 +77,17 @@ class ShortcodeProcessor
      * Builds the regular expression pattern used to find shortcodes in the text.
      * The pattern is built once and cached.
      *
-     * @return void
+     * @return bool
      */
-    private function buildRegexPattern(): void
+    private function buildRegexPattern(): bool
     {
         if ($this->regexPattern !== '') {
-            return;
+            return true;
         }
 
         if (empty($this->shortcodes)) {
             $this->regexPattern = '';
-            return;
+            return false;
         }
 
         $tags = \implode('|', \array_map(fn ($t) => \preg_quote($t, '~'), \array_keys($this->shortcodes)));
@@ -99,6 +97,8 @@ class ShortcodeProcessor
         // shortcodes that share the same name, as the non-greedy match will stop at the first
         // closing tag it finds. This is a known limitation.
         $this->regexPattern = '~\{(' . $tags . ')([^}]*)\}(?:(.*?)\{/\1\})?~s';
+
+        return true;
     }
 
     /**

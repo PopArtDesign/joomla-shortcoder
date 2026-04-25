@@ -80,11 +80,15 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
             return;
         }
 
-        $processor = $this->container->get(ShortcodeProcessor::class);
-
         $textProperties = ['text', 'introtext', 'fulltext', 'description'];
         foreach ($textProperties as $prop) {
             if (isset($item->$prop) && \is_string($item->$prop) && \strpos($item->$prop, '{') !== false) {
+                // The ShortcodeProcessor is lazily retrieved from the DI container
+                // only if a content property contains a potential shortcode (indicated by '{').
+                // This optimizes performance by avoiding unnecessary shortcode loading
+                // and object creation when no shortcodes are present on the page.
+                $processor ??= $this->container->get(ShortcodeProcessor::class);
+
                 $item->$prop = $processor->processShortcodes($item->$prop, $item);
             }
         }

@@ -3,6 +3,7 @@
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Event\ShortcoderPathsEvent;
@@ -18,12 +19,13 @@ return new class () implements ServiceProviderInterface {
             PluginInterface::class,
             function (Container $container) {
                 return new Shortcoder(
-                    $container->get(ShortcodeProcessor::class)
+                    (array) PluginHelper::getPlugin('content', 'shortcodes'),
+                    $container,
                 );
             }
         );
 
-        $container->set(
+        $container->share(
             ShortcodeLoader::class,
             function (Container $container) {
                 /** @var DispatcherInterface $dispatcher */
@@ -42,7 +44,7 @@ return new class () implements ServiceProviderInterface {
             }
         );
 
-        $container->set(
+        $container->share(
             ShortcodeProcessor::class,
             function (Container $container) {
                 $loader = $container->get(ShortcodeLoader::class);

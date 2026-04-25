@@ -4,9 +4,10 @@ namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension;
 
 use Joomla\CMS\Event\Content\ContentPrepareEvent;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\DI\Container;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
-use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
 
 \defined('_JEXEC') or die;
@@ -21,7 +22,7 @@ use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
  */
 class Shortcoder extends CMSPlugin implements SubscriberInterface
 {
-    private ShortcodeProcessor $processor;
+    private Container $container;
 
     private array $allowedContexts = [
         'com_content.article',
@@ -31,12 +32,18 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
 
     /**
      * Shortcoder constructor.
-     *
-     * @param ShortcodeProcessor $processor The shortcode processor instance.
      */
-    public function __construct(ShortcodeProcessor $processor)
+    public function __construct(array $config = [], Container $container)
     {
-        $this->processor = $processor;
+        $this->container = $container;
+
+        if (\version_compare(5, \JVERSION)) {
+            $dispatcher = $container->get(DispatcherInterface::class);
+            parent::__construct($dispatcher, $config);
+            return;
+        }
+
+        parent::__construct($config);
     }
 
     /**
@@ -72,10 +79,12 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
             return;
         }
 
+        $processor = $this->container->get(ShortcodeProcessor::class);
+
         $textProperties = ['text', 'introtext', 'fulltext', 'description'];
         foreach ($textProperties as $prop) {
             if (isset($item->$prop) && \is_string($item->$prop) && \strpos($item->$prop, '{') !== false) {
-                $item->$prop = $this->processor->processShortcodes($item->$prop, $item);
+                $item->$prop = $processor->processShortcodes($item->$prop, $item);
             }
         }
     }

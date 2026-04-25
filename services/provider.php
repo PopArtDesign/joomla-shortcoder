@@ -6,7 +6,7 @@ use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use JoomlaShortcoder\Plugin\Content\Shortcoder\Event\ShortcoderPathsEvent;
+use JoomlaShortcoder\Plugin\Content\Shortcoder\Event\LoadShortcodesEvent;
 use JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
 use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeLoader;
 use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
@@ -32,8 +32,8 @@ return new class () implements ServiceProviderInterface {
                 $dispatcher = $container->get(DispatcherInterface::class);
 
                 // Dispatch event to allow other plugins to add their paths
-                $event = new ShortcoderPathsEvent('onShortcoderRegisterPaths');
-                $dispatcher->dispatch('onShortcoderRegisterPaths', $event);
+                $event = new LoadShortcodesEvent('onShortcoderLoadShortcodes');
+                $dispatcher->dispatch('onShortcoderLoadShortcodes', $event);
 
                 // Add JPATH_ROOT/shortcodes last to give it the highest priority
                 if (\is_dir(\JPATH_ROOT . '/shortcodes')) {

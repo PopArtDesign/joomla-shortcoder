@@ -7,13 +7,13 @@ use Joomla\Event\Event;
 \defined('_JEXEC') or die;
 
 /**
- * Event for collecting shortcode paths.
+ * Event for collecting shortcodes.
  *
- * This event is dispatched to allow other plugins to add their custom shortcode paths.
+ * This event is dispatched to allow other plugins to add their custom shortcodes.
  *
  * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
  */
-class ShortcoderPathsEvent extends Event
+class LoadShortcodesEvent extends Event
 {
     /**
      * @var string[]

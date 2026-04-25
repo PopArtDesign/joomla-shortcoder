@@ -53,7 +53,7 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'onContentPrepare' => 'onContentPrepare',
+            'onContentPrepare' => 'processShortcodes',
         ];
     }
 
@@ -65,7 +65,7 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
      *
      * @return void
      */
-    public function onContentPrepare(EventInterface $event): void
+    public function processShortcodes(EventInterface $event): void
     {
         if ($event instanceof ContentPrepareEvent) {
             $context = $event->getContext();

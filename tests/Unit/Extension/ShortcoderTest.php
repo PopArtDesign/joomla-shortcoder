@@ -35,13 +35,13 @@ class ShortcoderTest extends TestCase
 
     public function testGetSubscribedEvents()
     {
-        $this->assertEquals(['onContentPrepare' => 'onContentPrepare'], Shortcoder::getSubscribedEvents());
+        $this->assertEquals(['onContentPrepare' => 'processShortcodes'], Shortcoder::getSubscribedEvents());
     }
 
     /**
      * @dataProvider eventProvider
      */
-    public function testOnContentPrepare($event, $item, $expectedCalls)
+    public function testProcessShortcodes($event, $item, $expectedCalls)
     {
         $originalText = $item->text;
 
@@ -49,7 +49,7 @@ class ShortcoderTest extends TestCase
             ->method('processShortcodes')
             ->willReturnCallback(fn ($text) => $text . '_processed');
 
-        $this->plugin->onContentPrepare($event);
+        $this->plugin->processShortcodes($event);
 
         if ($expectedCalls > 0) {
             $this->assertEquals($originalText . '_processed', $item->text);
@@ -113,6 +113,6 @@ class ShortcoderTest extends TestCase
             ->method('processShortcodes')
             ->willThrowException(new ShortcodeProcessingException('Test error'));
 
-        $this->plugin->onContentPrepare($event);
+        $this->plugin->processShortcodes($event);
     }
 }

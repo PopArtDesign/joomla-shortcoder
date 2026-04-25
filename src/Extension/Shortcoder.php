@@ -38,7 +38,7 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
         $this->container = $container;
 
         // Joomla 4.x BC
-        if (\version_compare(5, \JVERSION)) {
+        if (\version_compare(\JVERSION, '5', '<')) {
             $dispatcher = $container->get(DispatcherInterface::class);
             parent::__construct($dispatcher, $config);
             return;

@@ -29,7 +29,7 @@ class ShortcoderTest extends TestCase
                 [DispatcherInterface::class, $dispatcher],
             ]));
 
-        $this->plugin = new Shortcoder([], $container);
+        $this->plugin = new Shortcoder($container, []);
     }
 
 

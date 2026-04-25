@@ -33,10 +33,11 @@ class Shortcoder extends CMSPlugin implements SubscriberInterface
     /**
      * Shortcoder constructor.
      */
-    public function __construct(array $config = [], Container $container)
+    public function __construct(Container $container, array $config = [])
     {
         $this->container = $container;
 
+        // Joomla 4.x BC
         if (\version_compare(5, \JVERSION)) {
             $dispatcher = $container->get(DispatcherInterface::class);
             parent::__construct($dispatcher, $config);

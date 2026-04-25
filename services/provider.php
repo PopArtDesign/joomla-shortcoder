@@ -19,8 +19,8 @@ return new class () implements ServiceProviderInterface {
             PluginInterface::class,
             function (Container $container) {
                 return new Shortcoder(
-                    (array) PluginHelper::getPlugin('content', 'shortcodes'),
                     $container,
+                    (array) PluginHelper::getPlugin('content', 'shortcodes'),
                 );
             }
         );

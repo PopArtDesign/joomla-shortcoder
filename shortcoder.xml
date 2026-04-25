@@ -13,7 +13,6 @@
     <files>
         <folder plugin="shortcoder">services</folder>
         <folder>src</folder>
-        <folder>shortcodes</folder>
     </files>
     <updateservers>
         <server type="extension" priority="1" name="Joomla Shortcoder plugin updates">

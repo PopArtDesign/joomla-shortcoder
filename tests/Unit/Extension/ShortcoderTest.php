@@ -3,6 +3,8 @@
 namespace PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Tests\Unit\Extension;
 
 use Joomla\CMS\Event\Content\ContentPrepareEvent;
+use Joomla\DI\Container;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Exception\ShortcodeProcessingException;
 use PopArtDesign\JoomlaShortcoder\Plugin\Content\Shortcoder\Extension\Shortcoder;
@@ -18,8 +20,18 @@ class ShortcoderTest extends TestCase
     protected function setUp(): void
     {
         $this->processor = $this->createMock(ShortcodeProcessor::class);
-        $this->plugin = new Shortcoder($this->processor);
+        $dispatcher = $this->createMock(DispatcherInterface::class);
+
+        $container = $this->createMock(Container::class);
+        $container->method('get')
+            ->will($this->returnValueMap([
+                [ShortcodeProcessor::class, $this->processor],
+                [DispatcherInterface::class, $dispatcher],
+            ]));
+
+        $this->plugin = new Shortcoder([], $container);
     }
+
 
     public function testGetSubscribedEvents()
     {
@@ -103,5 +115,4 @@ class ShortcoderTest extends TestCase
 
         $this->plugin->onContentPrepare($event);
     }
-
 }

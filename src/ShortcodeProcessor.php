@@ -96,7 +96,7 @@ class ShortcodeProcessor
         // handles adjacent shortcodes. However, this approach does not support deeply nested
         // shortcodes that share the same name, as the non-greedy match will stop at the first
         // closing tag it finds. This is a known limitation.
-        $this->regexPattern = '~\{(' . $tags . ')([^}]*)\}(?:(.*?)\{/\1\})?~s';
+        $this->regexPattern = '~\{(' . $tags . ')(?![a-zA-Z0-9_\-])([^}]*)\}(?:(.*?)\{/\1\})?~s';
 
         return true;
     }

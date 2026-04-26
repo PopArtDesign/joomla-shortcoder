@@ -387,7 +387,7 @@ class ShortcodeProcessorTest extends TestCase
                 throw new \RuntimeException('Something went wrong inside the shortcode!'),
         ]);
 
-        $text = 'Content with a {faulty_shortcode} that will fail.';
+        $text = 'Content with a {faulty} that will fail.';
 
         $this->expectException(ShortcodeProcessingException::class);
         $this->expectExceptionMessage('Shortcode "faulty" failed to execute.');
@@ -498,6 +498,20 @@ class ShortcodeProcessorTest extends TestCase
         $this->assertSame(
             'Test 0!',
             $processor->processShortcodes($text, new \stdClass())
+        );
+    }
+
+    public function testPartialShortcodeIsNotMatched(): void
+    {
+        $processor = new ShortcodeProcessor([
+            'lorem' => fn () => 'ipsum',
+        ]);
+
+        $text = 'This is a {loremipsum} test.';
+
+        $this->assertSame(
+            $text,
+            $processor->processShortcodes($text, new \stdClass()),
         );
     }
 }

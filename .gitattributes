@@ -6,6 +6,7 @@
 LICENSE export-ignore
 README.md export-ignore
 composer.* export-ignore
+docs export-ignore
 phpunit.xml export-ignore
 tests export-ignore
 update.xml export-ignore

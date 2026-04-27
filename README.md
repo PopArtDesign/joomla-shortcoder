@@ -146,6 +146,11 @@ In your shortcode, `$attributes` would look something like this:
     {one}
     ```
 
+## Documentation
+
+*   [Real-world Examples](docs/examples.md)
+*   [Implementing a Custom Shortcode Provider Plugin](docs/custom-shortcode-plugin.md)
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).

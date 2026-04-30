@@ -70,8 +70,8 @@ main($argv);
  */
 function exitWithError(string $message): void
 {
-    echo "Error: " . $message . "
-";
+    fprintf(STDERR, "Error: %s\n", $message);
+
     exit(1);
 }
 

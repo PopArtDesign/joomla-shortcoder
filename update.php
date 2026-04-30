@@ -16,9 +16,6 @@ const MIN_PHP_VERSION         = '7.4';
  */
 function main(array $argv): void
 {
-    $tempZipPath = ''; // Will be set after version is determined
-
-    // 1. Argument Handling
     $version = parseArguments($argv);
 
     $pluginData = parseManifest(MANIFEST_FILE, $version);
@@ -29,7 +26,7 @@ function main(array $argv): void
     $pluginData['clientType'] = CLIENT_TYPE;
     $pluginData['targetPlatformVersion'] = TARGET_PLATFORM_VERSION;
 
-    $tempZipPath = sys_get_temp_dir() . '/joomla-shortcoder-' . $pluginData['version'] . '.zip';
+    $tempZipPath = tempnam(sys_get_temp_dir(), 'joomla-update');
 
     try {
         downloadZipFile($pluginData['downloadUrl'], $tempZipPath);
@@ -47,18 +44,6 @@ function main(array $argv): void
 
 // Run the main function
 main($argv);
-
-/**
- * Exits the script with an error message.
- *
- * @param string $message The error message.
- */
-function exitWithError(string $message): void
-{
-    fprintf(STDERR, "Error: %s\n", $message);
-
-    exit(1);
-}
 
 /**
  * Parses command-line arguments and returns the version.
@@ -280,4 +265,16 @@ function updateUpdateXml(string $updateXmlPath, array $data): void
     }
 
     echo basename($updateXmlPath) . " updated successfully.\n";
+}
+
+/**
+ * Exits the script with an error message.
+ *
+ * @param string $message The error message.
+ */
+function exitWithError(string $message): void
+{
+    fprintf(STDERR, "Error: %s\n", $message);
+
+    exit(1);
 }

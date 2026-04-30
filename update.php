@@ -271,7 +271,11 @@ function updateUpdateXml(string $updateXmlPath, array $data): void
 
     $updatesRoot->appendChild($updateNode);
 
-    if ($dom->save($updateXmlPath) === false) {
+    if (($xml = $dom->saveXML()) === false) {
+        exitWithError('Failed to generate XML');
+    }
+
+    if (file_put_contents($updateXmlPath, $xml) === false) {
         exitWithError("Failed to save " . basename($updateXmlPath));
     }
 

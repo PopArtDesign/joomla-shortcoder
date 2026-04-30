@@ -1,6 +1,68 @@
 <?php
 // update.php
 
+// Configuration & Constants
+const GITHUB_REPO_FULL = 'PopArtDesign/joomla-shortcoder';
+const CLIENT_TYPE = 'site';
+const TARGET_PLATFORM_VERSION = '(5\.|4\.)';
+const MIN_PHP_VERSION = '7.4'; // Default to 7.4 as per original logic
+
+/**
+ * Main function to orchestrate the update process.
+ *
+ * @param array $argv Command-line arguments.
+ */
+function main(array $argv): void
+{
+    $projectRoot = __DIR__;
+    $shortcoderXmlPath = $projectRoot . '/shortcoder.xml';
+    $composerJsonPath = $projectRoot . '/composer.json'; // Keep path for potential future use or consistency, though not parsed
+    $updateXmlPath = $projectRoot . '/update.xml';
+    $tempZipPath = ''; // Will be set after version is determined
+
+    // 1. Argument Handling
+    $version = parseArguments($argv);
+
+    // 2. Manifest Parsing (shortcoder.xml)
+    $pluginData = parseShortcoderXml($shortcoderXmlPath, $version);
+    $pluginData['version'] = $version; // Ensure version is set in pluginData
+
+    // 3. Set PHP Minimum Version from Constant
+    $pluginData['phpMinimumVersion'] = MIN_PHP_VERSION;
+
+    // 4. Construct Download URL and Paths
+    $pluginData['downloadUrl'] = buildDownloadUrl(
+        GITHUB_REPO_FULL,
+        $pluginData['version']
+    );
+    $pluginData['infoUrl'] = buildInfoUrl(GITHUB_REPO_FULL, $pluginData['version']);
+    $pluginData['clientType'] = CLIENT_TYPE;
+    $pluginData['targetPlatformVersion'] = TARGET_PLATFORM_VERSION;
+
+    $tempZipPath = sys_get_temp_dir() . '/joomla-shortcoder-' . $pluginData['version'] . '.zip';
+
+    try {
+        // 5. Download ZIP File
+        downloadZipFile($pluginData['downloadUrl'], $tempZipPath);
+
+        // 6. Calculate Checksums
+        $pluginData['checksums'] = calculateChecksums($tempZipPath);
+
+        // 7. Update XML Manipulation (update.xml)
+        updateUpdateXml($updateXmlPath, $pluginData);
+    } finally {
+        // 8. Cleanup temporary ZIP file
+        if (file_exists($tempZipPath)) {
+            @unlink($tempZipPath);
+            echo "Temporary ZIP file deleted.
+";
+        }
+    }
+}
+
+// Run the main function
+main($argv);
+
 /**
  * Exits the script with an error message.
  *
@@ -81,50 +143,28 @@ function parseShortcoderXml(string $filePath, ?string &$version): array
 }
 
 /**
- * Loads and parses composer.json, extracting the minimum PHP version.
- *
- * @param string $filePath Path to composer.json.
- * @return string The minimum PHP version.
- */
-function parseComposerJson(string $filePath): string
-{
-    $composerJsonContent = file_get_contents($filePath);
-    if ($composerJsonContent === false) {
-        exitWithError("Could not load " . basename($filePath));
-    }
-    $composerData = json_decode($composerJsonContent, true);
-    if ($composerData === null) {
-        exitWithError("Could not parse " . basename($filePath));
-    }
-
-    $phpMinimumVersion = '7.4'; // Default based on project AGENTS.md
-    if (isset($composerData['require']['php'])) {
-        $phpMinimumVersion = str_replace('>=', '', $composerData['require']['php']);
-    }
-
-    return $phpMinimumVersion;
-}
-
-/**
  * Constructs the download URL for the ZIP file.
  */
-function buildDownloadUrl(string $owner, string $repo, string $version, string $group, string $element): string
+function buildDownloadUrl(string $githubRepoFull, string $version): string
 {
-    $zipFileName = sprintf('plg_%s_%s-%s.zip', $group, $element, $version);
+    list($owner, $repo) = explode('/', $githubRepoFull);
+    // The user has indicated the correct URL format is for a tagged archive, not a release artifact.
+    // The format is https://github.com/{owner}/{repo}/archive/refs/tags/v{version}.zip
+    // The plugin's specific element or group is not part of this URL structure.
     return sprintf(
-        'https://github.com/%s/%s/releases/download/%s/%s',
+        'https://github.com/%s/%s/archive/refs/tags/v%s.zip',
         $owner,
         $repo,
-        $version,
-        $zipFileName
+        $version
     );
 }
 
 /**
  * Constructs the info URL for the release.
  */
-function buildInfoUrl(string $owner, string $repo, string $version): string
+function buildInfoUrl(string $githubRepoFull, string $version): string
 {
+    list($owner, $repo) = explode('/', $githubRepoFull);
     return sprintf(
         'https://github.com/%s/%s/releases/tag/%s',
         $owner,
@@ -259,68 +299,3 @@ function updateUpdateXml(string $updateXmlPath, array $data): void
     echo basename($updateXmlPath) . " updated successfully.
 ";
 }
-
-/**
- * Main function to orchestrate the update process.
- *
- * @param array $argv Command-line arguments.
- */
-function main(array $argv): void
-{
-    // Configuration & Constants
-    const GITHUB_OWNER = 'PopArtDesign';
-    const GITHUB_REPO = 'joomla-shortcoder';
-    const CLIENT_TYPE = 'site';
-    const TARGET_PLATFORM_VERSION = '(5\.|4\.)';
-
-    $projectRoot = __DIR__;
-    $shortcoderXmlPath = $projectRoot . '/shortcoder.xml';
-    $composerJsonPath = $projectRoot . '/composer.json';
-    $updateXmlPath = $projectRoot . '/update.xml';
-    $tempZipPath = ''; // Will be set after version is determined
-
-    // 1. Argument Handling
-    $version = parseArguments($argv);
-
-    // 2. Manifest Parsing (shortcoder.xml)
-    $pluginData = parseShortcoderXml($shortcoderXmlPath, $version);
-    $pluginData['version'] = $version; // Ensure version is set in pluginData
-
-    // 3. Composer.json Parsing (composer.json)
-    $pluginData['phpMinimumVersion'] = parseComposerJson($composerJsonPath);
-
-    // 4. Construct Download URL and Paths
-    $pluginData['downloadUrl'] = buildDownloadUrl(
-        GITHUB_OWNER,
-        GITHUB_REPO,
-        $pluginData['version'],
-        $pluginData['extensionGroup'],
-        $pluginData['pluginElement']
-    );
-    $pluginData['infoUrl'] = buildInfoUrl(GITHUB_OWNER, GITHUB_REPO, $pluginData['version']);
-    $pluginData['clientType'] = CLIENT_TYPE;
-    $pluginData['targetPlatformVersion'] = TARGET_PLATFORM_VERSION;
-
-    $tempZipPath = sys_get_temp_dir() . '/joomla-shortcoder-' . $pluginData['version'] . '.zip';
-
-    try {
-        // 5. Download ZIP File
-        downloadZipFile($pluginData['downloadUrl'], $tempZipPath);
-
-        // 6. Calculate Checksums
-        $pluginData['checksums'] = calculateChecksums($tempZipPath);
-
-        // 7. Update XML Manipulation (update.xml)
-        updateUpdateXml($updateXmlPath, $pluginData);
-    } finally {
-        // 8. Cleanup temporary ZIP file
-        if (file_exists($tempZipPath)) {
-            @unlink($tempZipPath);
-            echo "Temporary ZIP file deleted.
-";
-        }
-    }
-}
-
-// Run the main function
-main($argv);

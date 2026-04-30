@@ -9,4 +9,5 @@ composer.* export-ignore
 docs export-ignore
 phpunit.xml export-ignore
 tests export-ignore
+update.php export-ignore
 update.xml export-ignore

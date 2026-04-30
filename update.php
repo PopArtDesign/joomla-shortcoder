@@ -1,11 +1,13 @@
+#!/usr/bin/env php
 <?php
-// update.php
 
-// Configuration & Constants
-const GITHUB_REPO_FULL = 'PopArtDesign/joomla-shortcoder';
-const CLIENT_TYPE = 'site';
-const TARGET_PLATFORM_VERSION = '(5\.|4\.)';
-const MIN_PHP_VERSION = '7.4'; // Default to 7.4 as per original logic
+const PROJECT_ROOT            = __DIR__;
+const MANIFEST_FILE           = PROJECT_ROOT . '/shortcoder.xml';
+const UPDATE_FILE             = PROJECT_ROOT . '/update.xml';
+const GITHUB_REPO             = 'PopArtDesign/joomla-shortcoder';
+const CLIENT_TYPE             = 'site';
+const TARGET_PLATFORM_VERSION = '(4\.|5\.|6\.)';
+const MIN_PHP_VERSION         = '7.4';
 
 /**
  * Main function to orchestrate the update process.
@@ -14,48 +16,31 @@ const MIN_PHP_VERSION = '7.4'; // Default to 7.4 as per original logic
  */
 function main(array $argv): void
 {
-    $projectRoot = __DIR__;
-    $shortcoderXmlPath = $projectRoot . '/shortcoder.xml';
-    $composerJsonPath = $projectRoot . '/composer.json'; // Keep path for potential future use or consistency, though not parsed
-    $updateXmlPath = $projectRoot . '/update.xml';
     $tempZipPath = ''; // Will be set after version is determined
 
     // 1. Argument Handling
     $version = parseArguments($argv);
 
-    // 2. Manifest Parsing (shortcoder.xml)
-    $pluginData = parseShortcoderXml($shortcoderXmlPath, $version);
-    $pluginData['version'] = $version; // Ensure version is set in pluginData
-
-    // 3. Set PHP Minimum Version from Constant
+    $pluginData = parseManifest(MANIFEST_FILE, $version);
+    $pluginData['version'] = $version;
     $pluginData['phpMinimumVersion'] = MIN_PHP_VERSION;
-
-    // 4. Construct Download URL and Paths
-    $pluginData['downloadUrl'] = buildDownloadUrl(
-        GITHUB_REPO_FULL,
-        $pluginData['version']
-    );
-    $pluginData['infoUrl'] = buildInfoUrl(GITHUB_REPO_FULL, $pluginData['version']);
+    $pluginData['downloadUrl'] = buildDownloadUrl(GITHUB_REPO, $pluginData['version']);
+    $pluginData['infoUrl'] = buildInfoUrl(GITHUB_REPO, $pluginData['version']);
     $pluginData['clientType'] = CLIENT_TYPE;
     $pluginData['targetPlatformVersion'] = TARGET_PLATFORM_VERSION;
 
     $tempZipPath = sys_get_temp_dir() . '/joomla-shortcoder-' . $pluginData['version'] . '.zip';
 
     try {
-        // 5. Download ZIP File
         downloadZipFile($pluginData['downloadUrl'], $tempZipPath);
 
-        // 6. Calculate Checksums
         $pluginData['checksums'] = calculateChecksums($tempZipPath);
 
-        // 7. Update XML Manipulation (update.xml)
-        updateUpdateXml($updateXmlPath, $pluginData);
+        updateUpdateXml(UPDATE_FILE, $pluginData);
     } finally {
-        // 8. Cleanup temporary ZIP file
         if (file_exists($tempZipPath)) {
             @unlink($tempZipPath);
-            echo "Temporary ZIP file deleted.
-";
+            echo "Temporary ZIP file deleted.\n";
         }
     }
 }
@@ -96,11 +81,12 @@ function parseArguments(array $argv): ?string
 /**
  * Loads and parses shortcoder.xml, extracting plugin details.
  *
- * @param string $filePath Path to shortcoder.xml.
+ * @param string      $filePath Path to Manifest.
  * @param string|null &$version Reference to version; updated if not provided by arguments.
+ *
  * @return array Extracted plugin data.
  */
-function parseShortcoderXml(string $filePath, ?string &$version): array
+function parseManifest(string $filePath, ?string &$version): array
 {
     $shortcoderXml = simplexml_load_file($filePath);
     if ($shortcoderXml === false) {
@@ -108,12 +94,12 @@ function parseShortcoderXml(string $filePath, ?string &$version): array
     }
 
     $data = [
-        'pluginName' => (string)$shortcoderXml->name,
-        'pluginDescription' => (string)$shortcoderXml->description,
-        'author' => (string)$shortcoderXml->author,
-        'authorUrl' => (string)$shortcoderXml->authorUrl,
-        'extensionType' => (string)$shortcoderXml['type'],
-        'extensionGroup' => (string)$shortcoderXml['group'],
+        'pluginName' => (string) $shortcoderXml->name,
+        'pluginDescription' => (string) $shortcoderXml->description,
+        'author' => (string) $shortcoderXml->author,
+        'authorUrl' => (string) $shortcoderXml->authorUrl,
+        'extensionType' => (string) $shortcoderXml['type'],
+        'extensionGroup' => (string) $shortcoderXml['group'],
         'pluginElement' => '',
     ];
 
@@ -123,8 +109,7 @@ function parseShortcoderXml(string $filePath, ?string &$version): array
         if (empty($version)) {
             exitWithError("Version not specified and could not be read from " . basename($filePath));
         }
-        echo "Using version from " . basename($filePath) . ": " . $version . "
-";
+        echo "Using version from " . basename($filePath) . ": " . $version . "\n";
     }
 
     // Extract element from <files><folder plugin="shortcoder">
@@ -145,16 +130,11 @@ function parseShortcoderXml(string $filePath, ?string &$version): array
 /**
  * Constructs the download URL for the ZIP file.
  */
-function buildDownloadUrl(string $githubRepoFull, string $version): string
+function buildDownloadUrl(string $githubRepo, string $version): string
 {
-    list($owner, $repo) = explode('/', $githubRepoFull);
-    // The user has indicated the correct URL format is for a tagged archive, not a release artifact.
-    // The format is https://github.com/{owner}/{repo}/archive/refs/tags/v{version}.zip
-    // The plugin's specific element or group is not part of this URL structure.
     return sprintf(
-        'https://github.com/%s/%s/archive/refs/tags/v%s.zip',
-        $owner,
-        $repo,
+        'https://github.com/%s/archive/refs/tags/v%s.zip',
+        $githubRepo,
         $version
     );
 }
@@ -162,13 +142,11 @@ function buildDownloadUrl(string $githubRepoFull, string $version): string
 /**
  * Constructs the info URL for the release.
  */
-function buildInfoUrl(string $githubRepoFull, string $version): string
+function buildInfoUrl(string $githubRepo, string $version): string
 {
-    list($owner, $repo) = explode('/', $githubRepoFull);
     return sprintf(
-        'https://github.com/%s/%s/releases/tag/%s',
-        $owner,
-        $repo,
+        'https://github.com/%s/releases/tag/v%s',
+        $githubRepo,
         $version
     );
 }
@@ -181,8 +159,8 @@ function buildInfoUrl(string $githubRepoFull, string $version): string
  */
 function downloadZipFile(string $downloadUrl, string $tempZipPath): void
 {
-    echo "Attempting to download: " . $downloadUrl . "
-";
+    echo "Attempting to download: " . $downloadUrl . "\n";
+
     $zipContent = @file_get_contents($downloadUrl);
     if ($zipContent === false) {
         exitWithError("Failed to download ZIP file from " . $downloadUrl);
@@ -191,14 +169,15 @@ function downloadZipFile(string $downloadUrl, string $tempZipPath): void
     if (file_put_contents($tempZipPath, $zipContent) === false) {
         exitWithError("Failed to save ZIP file to " . $tempZipPath);
     }
-    echo "ZIP file downloaded successfully to " . $tempZipPath . "
-";
+
+    echo "ZIP file downloaded successfully to " . $tempZipPath . "\n";
 }
 
 /**
  * Calculates SHA256, SHA384, and SHA512 checksums for a given file.
  *
  * @param string $filePath The path to the file.
+ *
  * @return array An associative array of checksums.
  */
 function calculateChecksums(string $filePath): array
@@ -219,7 +198,7 @@ function calculateChecksums(string $filePath): array
  * Updates the update.xml file with a new update entry.
  *
  * @param string $updateXmlPath Path to update.xml.
- * @param array $data All data required for the update entry.
+ * @param array  $data          All data required for the update entry.
  */
 function updateUpdateXml(string $updateXmlPath, array $data): void
 {
@@ -246,8 +225,7 @@ function updateUpdateXml(string $updateXmlPath, array $data): void
     foreach ($updatesRoot->getElementsByTagName('update') as $existingUpdate) {
         $existingVersion = $existingUpdate->getElementsByTagName('version')->item(0);
         if ($existingVersion && $existingVersion->nodeValue === $data['version']) {
-            echo "Warning: Update for version " . $data['version'] . " already exists. Overwriting.
-";
+            echo "Warning: Update for version " . $data['version'] . " already exists. Overwriting.\n";
             $existingUpdateNode = $existingUpdate;
             break;
         }
@@ -296,6 +274,6 @@ function updateUpdateXml(string $updateXmlPath, array $data): void
     if ($dom->save($updateXmlPath) === false) {
         exitWithError("Failed to save " . basename($updateXmlPath));
     }
-    echo basename($updateXmlPath) . " updated successfully.
-";
+
+    echo basename($updateXmlPath) . " updated successfully.\n";
 }

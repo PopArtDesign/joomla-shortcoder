@@ -19,6 +19,7 @@ function main(array $argv): void
     $version = parseArguments($argv);
 
     $pluginData = parseManifest(MANIFEST_FILE, $version);
+    $pluginData['pluginName'] = "{$pluginData['pluginName']} v{$version}";
     $pluginData['version'] = $version;
     $pluginData['phpMinimumVersion'] = MIN_PHP_VERSION;
     $pluginData['downloadUrl'] = buildDownloadUrl(GITHUB_REPO, $pluginData['version']);

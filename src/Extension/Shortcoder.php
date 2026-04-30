@@ -20,7 +20,7 @@ use JoomlaShortcoder\Plugin\Content\Shortcoder\ShortcodeProcessor;
  *
  * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
  */
-class Shortcoder extends CMSPlugin implements SubscriberInterface
+final class Shortcoder extends CMSPlugin implements SubscriberInterface
 {
     private Container $container;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <updates>
   <update>
-    <name>Joomla Shortcoder v1.0.0</name>
+    <name>Joomla Shortcoder</name>
     <description>A lightweight, template-based shortcode engine</description>
     <element>shortcoder</element>
     <type>plugin</type>
@@ -16,12 +16,12 @@
     <sha512>6157d1c37bf61858b3b2a07b8857dff88bd84ef59c616c21bc9f96f45924702c1b54df9d09fbfe835c73bc67cb6e02280eebb30ba212875a4fdd94af867359ed</sha512>
     <sha384>6c21be7ad0113d512d851508c6f88b97944491bc93776a0f5abaeab2223c913bc0ad5f12433ac16ac1a2d8d6472a2a23</sha384>
     <sha256>41eeb8b071f0961576303cef1d2c0e6ce5f5e855b275308198be712830ae8d82</sha256>
-    <infourl title="Joomla Shortcoder v1.0.0">https://github.com/PopArtDesign/joomla-shortcoder/releases/tag/v1.0.0</infourl>
+    <infourl title="Joomla Shortcoder">https://github.com/PopArtDesign/joomla-shortcoder/releases/tag/v1.0.0</infourl>
     <targetplatform name="joomla" version="(4\.|5\.|6\.)"/>
     <php_minimum>7.4</php_minimum>
   </update>
   <update>
-    <name>Joomla Shortcoder v1.0.1</name>
+    <name>Joomla Shortcoder</name>
     <description>A lightweight, template-based shortcode engine</description>
     <element>shortcoder</element>
     <type>plugin</type>
@@ -36,7 +36,7 @@
     <sha512>0623ce736a5be0c7a85094e8c71b48ccffce9ec957f90eef931207cf3c6fe40afe51dd20bbfa8324214e58e91764ad5867d2949b349a62e20ee05f9d86487c09</sha512>
     <sha384>d5e7b1bdabfd1928dbbcccd3c3a5be5b9f61a4267d40b24712e03f3a3d6ebe241ad5ca0d209ba79aa5e3937114b5ab79</sha384>
     <sha256>9c2204ae7f78517156e47af2bee7c3bc34a905a18b858875d69a913d91920964</sha256>
-    <infourl title="Joomla Shortcoder v1.0.1">https://github.com/PopArtDesign/joomla-shortcoder/releases/tag/v1.0.1</infourl>
+    <infourl title="Joomla Shortcoder">https://github.com/PopArtDesign/joomla-shortcoder/releases/tag/v1.0.1</infourl>
     <targetplatform name="joomla" version="(4\.|5\.|6\.)"/>
     <php_minimum>7.4</php_minimum>
   </update>

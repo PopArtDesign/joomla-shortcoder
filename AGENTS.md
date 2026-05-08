@@ -13,24 +13,6 @@ This project contains a Joomla 4+ content plugin that provides a lightweight sho
 
 ## Development
 
-### Dependencies
-
-Project dependencies are managed with Composer. To install development dependencies (like PHPUnit), run:
-
-```bash
-composer install
-```
-
-### Testing
-
-The project uses PHPUnit for unit tests. Tests are located in the `tests/Unit` directory.
-
-To run the tests, execute the following command from the project root:
-
-```bash
-./vendor/bin/phpunit
-```
-
 ### Key Conventions
 
 *   **Shortcode Templates**: Shortcodes can be defined as standard PHP files or as PHP callables.
@@ -76,6 +58,24 @@ class MyShortcodeProviderPlugin implements SubscriberInterface
         });
     }
 }
+```
+
+### Dependencies
+
+Project dependencies are managed with Composer. To install development dependencies (like PHPUnit), run:
+
+```bash
+composer install
+```
+
+### Testing
+
+The project uses PHPUnit for unit tests. Tests are located in the `tests/Unit` directory.
+
+To run the tests, execute the following command from the project root:
+
+```bash
+./vendor/bin/phpunit
 ```
 
 ### Code Style

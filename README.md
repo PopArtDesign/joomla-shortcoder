@@ -146,6 +146,8 @@ In your shortcode, `$attributes` would look something like this:
     {one}
     ```
 
+*   **Joomla Page Cache**: When Joomla's page cache is enabled, the output of shortcodes is cached as part of the page's HTML. This can cause dynamic or user-specific content (e.g., a welcome message with the user's name) to become stale and be shown to all visitors. If your shortcodes must be dynamic, consider disabling Joomla's page cache on the relevant pages.
+
 ## Resources
 
 *   [Real-world Examples](docs/examples.md)

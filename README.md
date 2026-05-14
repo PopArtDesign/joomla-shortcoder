@@ -146,6 +146,8 @@ In your shortcode, `$attributes` would look something like this:
     {one}
     ```
 
+*   **Mixed Shortcode Syntax Usage**: While shortcodes support both self-closing (`{tag}`) and paired (`{tag}content{/tag}`) syntax, it is recommended to avoid mixing these forms for the **same shortcode tag** within a single content string. Using `{tag}` and then later `{tag}content{/tag}` for the same `tag` in the same article might lead to unpredictable parsing behavior due to the regex-based nature of the parser.
+
 *   **Joomla Page Cache**: When Joomla's page cache is enabled, the output of shortcodes is cached as part of the page's HTML. This can cause dynamic or user-specific content (e.g., a welcome message with the user's name) to become stale and be shown to all visitors. If your shortcodes must be dynamic, consider disabling Joomla's page cache on the relevant pages.
 
 ## Resources
